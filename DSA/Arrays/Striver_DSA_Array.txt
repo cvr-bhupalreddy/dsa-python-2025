@@ -1,0 +1,359 @@
+| Pattern                                      | Popular Problems                                                                                                                                                                                                                                                         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sliding Window (Fixed & Variable Size)       | 	• Longest Substring Without Repeating Characters 
+													• Minimum Window Substring 
+													• Longest Subarray with Sum K (positive) 
+													• Max/Min Sum Subarray of Size K 
+													• Fruits Into Baskets (Longest Subarray with 2 distinct) 
+													• Longest Repeating Character Replacement
+													
+| Two Pointers                                 | 	• 2Sum / 3Sum / 4Sum 
+													• Container With Most Water 
+													• Remove Duplicates from Sorted Array 
+													• Trapping Rain Water (two-pointer) 
+													• Dutch National Flag 
+													• Valid Palindrome / Almost Palindrome  
+													|
+| Prefix Sum / Difference Arrays               | 	• Subarray Sum Equals K 
+													• Count Subarrays Divisible by K 
+													• Maximum Size Subarray Sum = K 
+													• Running Sum 
+													• Range Sum Query 
+													• Longest Subarray with Sum ≤ K  
+													|
+| Prefix XOR                                   | 	• Count Subarrays with XOR = K 
+													• XOR Queries of Subarray 
+													• Maximum XOR Subarray 
+													• Find Two Non-Repeating Numbers Using XOR  
+													
+| Monotonic Stack                              | 	• Next Greater Element I/II 
+													• Daily Temperatures 
+													• Largest Rectangle in Histogram 
+													• Max Rectangle in Binary Matrix 
+													• Sum of Subarray Minimums 
+													• Online Stock Span 
+												
+| Binary Search on Answer                      | 	• Koko Eating Bananas 
+													• Ship Packages Within D Days 
+													• Aggressive Cows 
+													• Allocate Minimum Pages 
+													• Split Array Largest Sum 
+													• Minimum Speed to Arrive on Time 
+													• Smallest Divisor Given Threshold 
+													• Minimize Max Distance Between Gas Stations
+													
+| Binary Search on Real Numbers                | 	• Square Root (√N) 
+													• Nth Root 
+													• Minimize Max Distance Between Gas Stations 
+													• Find Cutting Length (Wood / Ribbon) 
+													• Ternary Search-like continuous problems 
+													• Find max/min feasible value on continuous domain                                            |
+| Binary Search on 2D Matrix                   | 	• Search a Value in Row-Wise Sorted Matrix 
+													• Count elements ≤ mid (for median of matrix) 
+													• Peak Element in Matrix 
+													• Median in Row-Wise Sorted Matrix  
+													|
+| Nested Binary Searches                       | 	• Median of Two Sorted Arrays (binary search partitions) 
+													• Kth Element of Two Sorted Arrays 
+													• K Closest Elements 
+													• Count ≤ mid in Matrix
+													|
+| Sorting + Greedy                             | 	• Merge Intervals 
+													• Non-overlapping Intervals 
+													• Meeting Rooms I/II 
+													• Minimum Number of Arrows to Burst Balloons 
+													• Reorganize String 
+													• Activity Selection
+													|
+| Hashing / Frequency Map                      | 	• Two Sum 
+													• Longest Consecutive Sequence 
+													• Group Anagrams 
+													• Isomorphic Strings 
+													• Word Pattern 
+													• Top K Frequent Elements 
+													|
+| Kadane / DP on Subarray                      | 	• Maximum Subarray Sum 
+													• Maximum Product Subarray 
+													• Longest Increasing Subsequence 
+													• House Robber 
+													• Jump Game I/II                                                                                                                                           |
+| Intervals Pattern                            | 
+													• Merge Intervals 
+													• Insert Interval 
+													• Meeting Rooms I/II 
+													• Car Pooling 
+													• Employee Free Time 
+													|
+													
+| Matrix Traversal Pattern                     		• Spiral Matrix 
+													• Rotate Matrix 
+													• Word Search 
+													• Number of Islands 
+													• Flood Fill 
+													• Set Matrix Zeroes                                                                                                                                                       |
+| String – Expand Around Center / Two Pointers | • Longest Palindromic Substring • Count Palindromic Substrings • Valid Palindrome • Remove Adjacent Duplicates • Longest Nice Substring                                                                                                                      |
+| Trie (Prefix Tree)                           | • Implement Trie • Word Search II • Replace Words • Auto-suggest System • Maximum XOR Pair (Binary Trie)                                                                                                                                                     |
+| Bitmask + Bit Manipulation                   | • Single Number I/II/III • Subsets using Bitmask • Find Missing Number • Count Bits • Maximum AND Pair                                                                                                                                                       |
+
+
+
+
+
+========================DSA Striver=================
+Homogeneous 
+Contiguous Memory ==> Index access , Random Access 
+
+
+---->1.  Largest Element in Array 
+			Onepass , O(N)
+
+---->2.  Second Largest Element in Array 
+
+			Brute : Sort Array in Ascending
+					Largest = Array[N-1] 
+				    Traverse in reverse order from Index N-2 and compare with max , if it's less than max then return 
+					
+					Complexity :
+						Sorting -- O(nlogN)
+						Traverse Entire Array  when all elements are Largest ==> O(N)
+						
+						==> O(N + NlogN)
+			
+			SubOptimal :
+					First Pass find Largest ==> O(N)
+					2nd Pass find 2nd Largest ==> O(N)
+					
+					2passes and Time Complexity is 
+					
+					
+			Optimal Algorithm : One Pass and Time Complexity O(N)
+			
+				if( numbers[index] > largest ){
+                sLargest = largest;
+                largest = numbers[index];
+            } 	else if (numbers[index] < largest && numbers[index] >=sLargest) {
+                sLargest = numbers[index]; }
+	
+
+Kth Smallest or Largest Element in Array ?	
+
+
+---->3. Array is Sorted or Not 			
+		
+			Ascending Order 
+			
+			if(array[i] <= array[i+1])
+			   skip 
+			else 
+				return false 
+				
+				
+				
+---------> 4. Count Unique Elements in Sorted Array In-place 
+
+		Brute : Scan and Use SET Data structure 
+				Each set Insert O(logN) ===> O(NlogN)
+				For Counting Unique Numbers need to traverse set ==> O(N)
+				Space is ==>O(N)
+		
+		Optimal : Using 2 Pointer 
+		
+		remove duplicates in Sorted array in-place 
+		
+		if(arr[i] != arr[j])
+			arr[i+1] = arr[j];
+			i++ 
+		return i+1;
+		
+		
+		
+============Rotate Array Left by 1 Position 
+
+[1,2,3,4,5] ==> [2,3,4,5,1]
+
+pivot = index[0]
+for(index = 1 ; index < n ;index++)
+	array[index-1] = array[index];
+array[index-1] = pivot;
+
+
+=========Left Rotate the Array by K places ==========
+Take temporary array of K elements and Store First K elements 
+
+TC :O(N + D)
+SC : O(D) 
+
+--Can you remove Extra space ?
+Reverse K elements  => O(K)
+Reverse N-K elements => O(N-K)
+Reverse Entire Array N  Elements => O(N)
+
+ ----------Assignment Right Rotate Array by K elements 
+ 
+=======Move All Zero's to End of Array =====
+
+left = 0;
+right = n-1 ==> If you know the length of the array 
+
+while(left < right)
+  arr[right] == 0
+    right--
+  arr[left] == 0
+    swap(arr[left] , arr[right])
+	left++ , right-- 
+
+
+Optimal Approach : 
+J is always pointing to Zero and I is iterating 
+
+Step1 : Identify first Zero 
+   J = I 
+   
+step 2: 
+	I pointing non-zero 
+	then Swap(Arr[J] , arr[I])
+	   J++ 
+	   
+
+=============Union and Intersection of 2 Sorted Arrays============
+===Union====
+Brute force Algo ==> Use Set Datastructure 
+
+Optimal Approach : Using Merge Algorithm with Last Inserted Element Tracking to avoid Duplicates 
+
+	TC : O(M+N) , SC : O(M+N)
+	
+=====Intersection=== [Same like Merge 
+A[I] == A[J] 
+ Insert Element and update last 
+ 
+ 
+=====Missing Number==========
+Brute Find Each element in Array 
+
+
+
+Optimal 1 :
+Sum of N natural Numbers S1 = N(N+1)/2 
+Calculate sume of Array S2 
+
+Number = S1-S2 
+Optimal 2: Using XOR  Arr[i] XOR i+1 
+
+
+
+====================Sorting 0's , 1's ,2's==================
+Brute : 	Sort Array ---> NlogN 
+Better : Pass 1  : Count 0's , 1's ,2's 
+		 Pass 2 : replacing array with 1 count , 2 count and 3 count 
+		 
+
+Best : Dutch National Flag Algorithm 
+
+		3 pointers : Low , Mid , high  [ mid to high unsorted ]
+			Low-1 : End of 0's 
+			Middle -1  : End of 1's 
+			high + 1 :	Start of 2's 
+			
+			middle to high all unsorted 
+			
+			low = 0 , mid = 0 high = n-1
+			
+a[mid] == 0 ==>swap(a[low] , a[mid]) low++ , mid++ 
+a[mid] == 1 ==> mid++ 
+a[mid] == 2 ==> swap(a[mid] , a[high])	high--
+
+
+
+
+
+
+===============Longest Sub Array with Sum K==============================
+return the length of longest sub array 
+Will array will have all +ve Integers ?
+
+
+Left and Right 
+
+if sum < k 
+add more elements and move righ++ 
+
+
+total sub arrays => N^2 
+Finding sum of Sub Array => N 
+Total time Complexity  N^3
+
+
+
+I  
+j = i+1 
+	sum += a[j]
+   max(maxLen , j-i+1)
+   
+   
+----Prefix Sum in the Hashmap------
+HashMap<prefixSum , Index>
+
+	Sum - K = partialSum [if there is a prefix  with value prefixSum]
+	
+This will work for positives , Negatives and Zero's and this is optimal solution for [positive , negative , zeros ]
+
+TC :  O(N*log(N))
+SC : O(N) ---> All the prefix sum 
+
+--------Array Contains only Positives and Zero's-------
+we can use 2 ponters left and right 
+
+if sum is less than target move right forward 
+
+if sum is greater than target then subtract left element and move left forward till sum is less than target 
+
+if sum is equal to target then update max length based on left and right positions 
+
+
+
+=================Two SUM in Array===========
+2 loops 
+	O(N^2)
+	
+Using Hashing : TC :O(NlogN) ---> If Hashmap search is LogN 
+				SC : O(N) for storing Elements in HashMap 
+				
+Using Sorting and 2 pointers 
+	NlogN + N 
+	
+left = 0 , right = n-1
+
+array[left] + array [right] < K ==> left ++ 
+array[left] + array [right] > K ==> right-- 
+array[left] + array [right] = K [Found Pair] 
+
+
+==================Majority Element in Array=======================
+in an array occurance of element is > N/2 then that element is called majority Element 
+
+
+Brute : Two Loops 
+
+Better : Hashing 
+
+
+Moore's Voting Algorithm 
+
+Greater than N/2 times means element will not get cancelled in any sub array 
+
+element = a[left] 
+
+count = 1
+
+
+
+
+
+
+
+				
+
+
+
+

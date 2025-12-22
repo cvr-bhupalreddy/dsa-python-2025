@@ -1,0 +1,426 @@
+==================DSA Binary Search=====================
+1) PATTERN: Standard Binary Search
+   PROBLEM: Search Insert Position
+   CORE IDEA:
+     - Maintain two pointers: low, high.
+     - Repeatedly compute mid = (low + high) // 2.
+     - If target == nums[mid] → return mid.
+     - If target < nums[mid] → shrink search to left (high = mid - 1).
+     - Else → shrink search to right (low = mid + 1).
+     - If not found, return low (correct insert position).
+
+Algorithm:
+1. Let low = 0, high = n-1
+2. While low <= high:
+       mid = (low + high) // 2
+       If arr[mid] == target: return mid
+       If arr[mid] < target: low = mid + 1
+       Else: high = mid - 1
+3. If element not found, low will be the insert position
+4. Return low
+
+
+------------------------------------------------------------
+
+2) PATTERN: First/Last Occurrence (Lower/Upper Bound)
+   PROBLEM: First Occurrence of Target
+   CORE IDEA:
+     - Use binary search to find the leftmost index where nums[i] == target.
+     - When nums[mid] == target → store mid, move left (high = mid - 1).
+     - If nums[mid] < target → low = mid + 1.
+     - Else → high = mid - 1.
+     - Final stored position = first occurrence.
+
+Algorithm:
+1. Set low = 0, high = n-1, ans = -1
+2. While low <= high:
+       mid = (low + high) // 2
+       If arr[mid] == target:
+            ans = mid     # store and search left side
+            high = mid - 1
+       Else if arr[mid] < target:
+            low = mid + 1
+       Else:
+            high = mid - 1
+3. Return ans
+
+------------------------------------------------------------
+
+3) PATTERN: Binary Search on Answer (Parametric Search)
+   PROBLEM: Koko Eating Bananas
+   CORE IDEA:
+     - Search on possible answers = speed k (1 to max(piles)).
+     - For each k, compute time_required = Σ ceil(pile/k).
+     - If time_required <= H → try smaller k (valid).
+     - Else → increase k (invalid).
+     - Smallest k that satisfies condition is the answer.
+
+Algorithm:
+1. Search space = [1, max(piles)]  → possible eating speeds
+2. For mid speed:
+       Compute total hours = sum(ceil(pile / mid))
+3. If total_hours <= h:
+       mid is valid → try smaller speed → high = mid - 1
+   Else:
+       mid is too slow → low = mid + 1
+4. Return low  (smallest valid speed)
+
+
+------------------------------------------------------------
+
+4) PATTERN: Rotated Sorted Array Search
+   PROBLEM: Search in Rotated Sorted Array
+   CORE IDEA:
+     - Find which side of mid is sorted.
+     - If left half sorted:
+         check if target lies inside → move into left
+         else → move right
+     - Else right half sorted:
+         check if target lies inside → move into right
+         else → move left
+     - Always shrink towards the side where target can exist.
+
+Algorithm:
+1. Set low = 0, high = n-1
+2. While low <= high:
+       mid = (low + high) // 2
+
+       If arr[mid] == target: return mid
+
+       # Left half sorted
+       If arr[low] <= arr[mid]:
+            If arr[low] <= target < arr[mid]:
+                 high = mid - 1
+            Else:
+                 low = mid + 1
+
+       # Right half sorted
+       Else:
+            If arr[mid] < target <= arr[high]:
+                 low = mid + 1
+            Else:
+                 high = mid - 1
+3. Return -1
+
+------------------------------------------------------------
+
+5) PATTERN: Peak / Bitonic Array Search
+   PROBLEM: Find Peak Element
+   CORE IDEA:
+     - Compare nums[mid] with nums[mid + 1].
+     - If nums[mid] < nums[mid+1] → peak is on right side.
+     - Else → peak is on left side (including mid).
+     - Binary search on slope change leads to a peak.
+
+Algorithm:
+1. low = 0, high = n-1
+2. While low < high:
+       mid = (low + high) // 2
+       If arr[mid] < arr[mid + 1]:
+            low = mid + 1   # go toward increasing side
+       Else:
+            high = mid      # mid could be peak
+3. Return low  (peak index)
+
+------------------------------------------------------------
+
+6) PATTERN: Binary Search in 2D Matrix
+   PROBLEM: Search 2D Matrix (flattened)
+   CORE IDEA:
+     - Treat matrix as a 1D sorted array of length m*n.
+     - mid maps to matrix[mid//n][mid%n].
+     - Perform standard binary search using this mapping.
+
+Algorithm:
+1. Treat matrix of r x c as a 1D array of size r*c
+2. low = 0, high = r*c - 1
+3. While low <= high:
+       mid = (low + high) // 2
+       row = mid // c
+       col = mid % c
+       If matrix[row][col] == target: return True
+       If matrix[row][col] < target: low = mid + 1
+       Else: high = mid - 1
+4. Return False
+
+------------------------------------------------------------
+
+7) PATTERN: Binary Search on Real Numbers (Precision BS)
+   PROBLEM: Square Root with Precision
+   CORE IDEA:
+     - Search between low=0 and high=num.
+     - mid = (low+high)/2
+     - If mid*mid > num → decrease high
+     - Else → increase low
+     - Continue until (high - low) < eps precision.
+
+Algorithm:
+1. low = 0, high = n
+2. Repeat loop for precision (e.g., 80 iterations):
+       mid = (low + high) / 2
+       If mid*mid < n: low = mid
+       Else: high = mid
+3. Answer = low or high
+
+------------------------------------------------------------
+
+8) PATTERN: BS in Linked List (Use Middle via Slow/Fast)
+   PROBLEM: Find Middle of Linked List
+   CORE IDEA:
+     - Use two pointers:
+         slow → moves 1 step
+         fast → moves 2 steps
+     - When fast reaches end, slow is at mid.
+     - This simulates binary-search-like halving of list.
+
+------------------------------------------------------------
+
+9) PATTERN: BS in 2D Sorted Matrix (Row & Col Sorted)
+   PROBLEM: Kth Smallest Element in Sorted Matrix
+   CORE IDEA:
+     - Search on answer range: low=min element, high=max element.
+     - For each mid:
+         count how many elements <= mid using row-wise pointer trick.
+     - If count < k → search right (mid larger).
+     - Else → search left (mid smaller).
+     - Smallest value for which count >= k is the answer.
+
+Algorithm: Kth Smallest Element in Sorted Matrix
+
+1. Initialize search range:
+       low  = smallest element in matrix
+       high = largest element in matrix
+
+2. While low <= high:
+       mid = (low + high) // 2
+
+3. Count number of elements <= mid:
+       Initialize count = 0
+       row = number of rows - 1
+       col = 0
+       While row >= 0 and col < number of columns:
+           If matrix[row][col] <= mid:
+               count += row + 1  # all elements in current column <= mid
+               col += 1
+           Else:
+               row -= 1
+
+4. Adjust search range:
+       If count < k:
+           low = mid + 1   # mid too small
+       Else:
+           high = mid - 1  # mid could be answer
+
+5. Return low as the Kth smallest element
+
+------------------------------------------------------------
+
+10) PATTERN: BS + Sliding Window Check
+    PROBLEM: Kth Smallest Pair Distance
+    CORE IDEA:
+      - Search on answer = distance (0 to max-min).
+      - For each mid (distance guess), count how many pairs have diff <= mid.
+        (use sliding window)
+      - If count >= k → mid is valid, shrink right.
+      - Else → need larger distance.
+      - Smallest valid mid = answer.
+
+Algorithm:
+1. Sort the array
+2. Search space = distance ∈ [0, max(arr)-min(arr)]
+3. For mid distance:
+       Count number of pairs with diff <= mid using sliding window
+4. If count >= k:
+       high = mid
+   Else:
+       low = mid + 1
+5. Return low
+
+------------------------------------------------------------
+11) Meidan of 2 Sorted Arrays 
+We use binary search to find a valid partition of the two sorted arrays such that:
+
+    left_half(max) <= right_half(min)
+
+We always binary-search the smaller array to reduce complexity.
+
+At each mid (cut1) in nums1:
+    cut2 is automatically fixed so that left side has (n+m+1)//2 elements.
+
+We check 4 boundary values:
+    l1 = element just left of cut1 in nums1 (or -∞ if out of bounds)
+    r1 = element just right of cut1 in nums1 (or +∞ if out of bounds)
+    l2 = element just left of cut2 in nums2 (or -∞)
+    r2 = element just right of cut2 in nums2 (or +∞)
+
+A valid partition satisfies:
+    l1 <= r2   AND   l2 <= r1
+
+If the partition is valid:
+    - For odd total length → median is max(l1, l2)
+    - For even total length → median is average of max(l1, l2) and min(r1, r2)
+
+If invalid:
+    - If l1 > r2: we are too far right → move left (high = mid - 1)
+    - Else: move right (low = mid + 1)
+
+Binary search guarantees O(log(min(n,m))) time.
+
+
+📌 Problem: Median of Two Sorted Arrays (Hard)
+Algorithm:
+1. Ensure nums1 is smaller array
+2. Binary search on nums1:
+       low = 0, high = len(nums1)
+3. For each mid:
+       cut1 = mid
+       cut2 = (n+m+1)//2 - cut1
+       l1 = nums1[cut1-1] or -inf
+       r1 = nums1[cut1]   or +inf
+       l2 = nums2[cut2-1] or -inf
+       r2 = nums2[cut2]   or +inf
+4. If l1 <= r2 and l2 <= r1:
+       If (n+m) even: return max(l1,l2)+min(r1,r2))/2
+       Else: return max(l1,l2)
+5. If l1 > r2: high = mid - 1
+6. Else: low = mid + 1
+
+
+
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| PATTERN                       | IDEA / WHEN TO USE                                       | MOST POPULAR FAANG QUESTIONS                 |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 1. Standard Binary Search     | Classic BS on sorted arrays                              | - Binary Search                              |
+|                               | Find exact element or insert position                    | - Search Insert Position                     |
+|                               |                                                          | - Search in Infinite Array                   |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 2. First / Last Occurrence    | Lower bound (first ≥ x) & upper bound (last ≤ x)         | - First Occurrence of Element                |
+|   (Boundary Search)           | Useful in counting occurrences                           | - Last Occurrence of Element                 |
+|                               |                                                          | - Count Occurrences                          |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 3. Binary Search on Answer    | Search on monotonic function → f(mid) True/False         | - Koko Eating Bananas                        |
+|   (Parametric Search)         | “Can we do it with X?”                                   | - Min Speed to Arrive on Time                |
+|                               |                                                          | - Split Array Largest Sum                    |
+|                               |                                                          | - Painters Partition                         |
+|                               |                                                          | - Allocate Minimum Pages                     |
+|                               |                                                          | - Aggressive Cows / Magnetic Force           |
+|                               |                                                          | - Capacity to Ship Packages                  |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 4. Rotated Sorted Array       | Array is sorted but rotated at pivot                     | - Search in Rotated Sorted Array             |
+|                               | Must identify sorted half                                | - Find Min in Rotated Array                  |
+|                               |                                                          | - Count Rotations / Find Pivot               |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 5. Peak / Bitonic Array       | Array increases then decreases (unimodal)                | - Find Peak Element                          |
+|                               | BS to find max                                           | - Peak in Mountain Array                     |
+|                               |                                                          | - Search in Mountain Array                   |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 6. Binary Search in Matrix    | Treat 2D matrix as sorted                                | - Search 2D Matrix I                         |
+|                               | Or use row/column BS                                     | - Search 2D Matrix II                        |
+|                               |                                                          | - Kth Smallest in Sorted Matrix              |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 7. BS on Real Numbers         | Use BS to find value with precision (eps)                | - Square Root (sqrt)                         |
+|                               | When continuous monotonic function exists                | - Nth Root of Number                         |
+|                               |                                                          | - Minimize Max Distance — Gas Stations       |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 8. BS on Linked List          | Use slow/fast pointer to find mid                        | - Find Middle of Linked List                 |
+|                               | Then apply binary search on conceptual sorted list       | - Search Sorted Linked List                  |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 9. Two-Level Binary Search    | BS used inside another BS helper                         | - Median of Two Sorted Arrays                |
+|                               | Example: count ≤ mid inside matrix                       | - K Closest Elements                         |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+| 10. BS + Sliding Window       | BS on window size + TW validation check                  | - Kth Smallest Pair Distance                 |
+|                               |                                                          | - Min Window Size with constraints           |
++-------------------------------+-----------------------------------------------------------+----------------------------------------------+
+
+
+
+PATTERN                                | DESCRIPTION                                 | MOST POPULAR PROBLEMS
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+1. Standard Binary Search              | Search exact value in sorted array           | Binary Search
+                                       |                                              | Search Insert Position
+                                       |                                              | Element in Infinite Array
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+2. First / Last Occurrence             | lower_bound / upper_bound search             | First Occurrence
+                                       |                                              | Last Occurrence
+                                       |                                              | Count Occurrences
+                                       |                                              | Floor & Ceil
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+3. Binary Search on Answer             | Search on monotonic function f(mid):         | Koko Eating Bananas
+(Search in Search Space)               | True/False checking function                 | Min Speed to Arrive On Time
+                                       |                                              | Split Array Largest Sum
+                                       |                                              | Painters Partition
+                                       |                                              | Allocate Minimum Pages
+                                       |                                              | Aggressive Cows
+                                       |                                              | Capacity to Ship Packages
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+4. Rotated Sorted Array                | Array rotated around a pivot                 | Search in Rotated Array
+                                       |                                              | Min in Rotated Sorted Array
+                                       |                                              | Find Pivot Index
+                                       |                                              | Search Rotated Array II (with duplicates)
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+5. Peak / Bitonic / Mountain Array     | Increasing then decreasing arrays            | Find Peak Element
+                                       |                                              | Peak Index in Mountain Array
+                                       |                                              | Search in Mountain Array
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+6. Binary Search in 2D Matrix          | Rows & columns sorted                        | Search 2D Matrix I
+                                       |                                              | Search 2D Matrix II
+                                       |                                              | Kth Smallest in Sorted Matrix
+                                       |                                              | 2D Peak Finding
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+7. Binary Search on Real Numbers       | Precision search on doubles/floats           | Square Root (sqrt)
+                                       |                                              | Nth Root of Number
+                                       |                                              | Gas Stations — Minimize Max Distance
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+8. Binary Search on Linked List        | Use slow/fast pointers to find mid           | Sorted Linked List Search
+                                       |                                              | Find Middle of Linked List
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+9. Nested Binary Searches              | BS inside helper function repeatedly         | Median of Two Sorted Arrays
+                                       |                                              | K Closest Elements
+                                       |                                              | Count <= mid in Matrix
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+10. Binary Search + Sliding Window     | BS to check if a window size is valid        | Kth Smallest Pair Distance
+                                       |                                              | Min Window Size under constraints
+---------------------------------------|----------------------------------------------|---------------------------------------------------------------
+
+
+=======Binary Search on Answer========
+| Problem Name                     | Parameter Searched (Binary Search) | Logical Constraints / Rules                                                                                                           | Low (minimum possible) | High (maximum possible)   | Feasibility Function / Check                                   |
+| -------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------- | -------------------------------------------------------------- |
+| Koko Eating Bananas              | Eating speed K                     | Koko eats at most K bananas per hour, only one pile per hour, if pile > K remaining takes another hour, total hours ≤ H               | 1                      | max(piles)                | sum(ceil(p/K) for p in piles) ≤ H                              |
+| Ship Packages Within D Days      | Ship capacity C                    | Packages shipped in order, each day ship can carry ≤ C weight, cannot split a package across days, must ship all packages in ≤ D days | max(weights)           | sum(weights)              | Can all packages be shipped in D days with capacity C?         |
+| Minimum Speed to Arrive on Time  | Speed V                            | Must travel stations in order, each segment distance / speed gives hours (ceil if partial), total time ≤ H                            | 1                      | large upper bound         | Can travel all segments in ≤ H hours with speed V?             |
+| Aggressive Cows / Horses         | Minimum distance D                 | Place all cows in stalls, distance between cows ≥ D, only one cow per stall                                                           | 1                      | max(stalls) - min(stalls) | Can all cows be placed with distance ≥ D?                      |
+| Painter’s Partition Problem      | Maximum time per painter           | Each painter paints continuous boards, board cannot be split, sequential allocation, minimize maximum time                            | max(board_lengths)     | sum(board_lengths)        | Can all boards be painted by k painters within max time ≤ mid? |
+| Allocate Minimum Pages           | Maximum pages assigned             | Books assigned in order, each student gets continuous books, minimize maximum pages assigned to any student                           | max(pages)             | sum(pages)                | Can n books be allocated to m students with max pages ≤ mid?   |
+| Wood Cutting / Ribbon Cutting    | Length of each piece L             | Each piece ≥ L, can cut multiple pieces from one log/ribbon, must meet required number of pieces                                      | 1                      | max(lengths)              | Can we cut required number of pieces with length ≥ L?          |
+| Smallest Divisor Given Threshold | Divisor D                          | Divide each number by D and round up, sum ≤ threshold, D is smallest integer satisfying condition                                     | 1                      | max(nums)                 | sum(ceil(nums[i]/D)) ≤ threshold                               |
+| Kth Missing Positive Number      | Value of missing number            | Array strictly increasing, positive integers only, find k-th missing positive number                                                  |                        |                           |                                                                |
+
+======Binary Search on Grids==========
+| Problem Name                               | Parameter Searched (Binary Search) | Numeric Constraints / Input Limits                   | Logical Constraints / Rules                                                                   | Low (minimum possible) | High (maximum possible) | Feasibility Function / Check                                     |
+| ------------------------------------------ | ---------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------- | ----------------------- | ---------------------------------------------------------------- |
+| Kth Smallest Element in a Sorted Matrix    | Value `x`                          | n x n grid, 1 ≤ n ≤ 300, 1 ≤ matrix[i][j] ≤ 10⁹      | Rows and columns are sorted; find k-th smallest element in the entire matrix                  | min(matrix)            | max(matrix)             | Count of elements ≤ mid ≥ k                                      |
+| Search in a 2D Matrix                      | Target value `x`                   | m x n grid, 1 ≤ m,n ≤ 10³, -10⁹ ≤ matrix[i][j] ≤ 10⁹ | Rows sorted left→right, last element of row < first element of next row; find target          | matrix[0][0]           | matrix[m-1][n-1]        | Standard binary search after virtual flattening or row selection |
+| Median of a Row-wise Sorted Matrix         | Median value                       | r x c grid, r,c ≤ 500                                | Each row is sorted; find median of all elements                                               | 1                      | 10⁹                     | Count of elements ≤ mid ≥ (r*c+1)//2                             |
+| Minimum Difficulty / Maximum Distance Grid | Max or Min value                   | n x n or m x n grid, 1 ≤ n,m ≤ 10³                   | Path or assignment problems with monotonic property (difficulty ≤ mid / distance ≤ mid)       | min(grid)              | max(grid)               | Is there a path / assignment satisfying current threshold mid?   |
+| Kth Smallest Pair Distance                 | Pair distance `d`                  | 1 ≤ n ≤ 10⁴, 0 ≤ nums[i] ≤ 10⁶                       | All pair distances sorted; find k-th smallest absolute difference between pairs               | 0                      | max(nums) - min(nums)   | Count of pairs with distance ≤ mid ≥ k                           |
+| Minimum Time to Complete Tasks / Workers   | Time `t`                           | Grid representing tasks/workers                      | Tasks assigned to workers; check if all tasks completed within `t` using monotonic assignment | min(time)              | max(time)               | Can all tasks be completed within time `t`?                      |
+| Allocate Books in 2D                       | Maximum pages per student          | 2D array: students x subjects, 1 ≤ n ≤ 10³           | Assign subjects to students sequentially, minimize maximum pages assigned                     | max(books)             | sum(books)              | Can all books be allocated to students with max pages ≤ mid?     |
+
+
+========Nested Binary Searches==========
+Core Idea:
+	Outer binary search guesses a value / index / threshold.
+	Inner helper uses another binary search or counting method to validate the guess.
+Common Use Cases:
+	Median / k-th element problems across two arrays or matrices.
+	Counting elements ≤ mid in 2D grid / sorted array pairs.
+
+Feasibility function: Typically involves nested binary search or two-pointer counting.
+
+| Problem Name                | Parameter Searched (Binary Search) | Numeric Constraints / Input Limits              | Logical Constraints / Rules                                                                                | Low (minimum possible) | High (maximum possible) | Feasibility Function / Check                                   |
+| --------------------------- | ---------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------- | ----------------------- | -------------------------------------------------------------- |
+| Median of Two Sorted Arrays | Median value                       | Array1 length m, Array2 length n, 1 ≤ m,n ≤ 10⁵ | Find median of two sorted arrays without merging; binary search on smaller array with helper binary search | min(arr1+arr2)         | max(arr1+arr2)          | Partition arrays correctly so left partition ≤ right partition |
+| K Closest Elements          | Left boundary / window start index | Array length n ≤ 10⁵, -10⁹ ≤ arr[i] ≤ 10⁹       | Find k elements closest to target x; binary search for start index then slide window                       | 0                      | n-k                     | Window starting at mid contains k closest elements             |
+| Count ≤ mid in Matrix       | Value `mid`                        | n x n grid, 1 ≤ n ≤ 500, rows sorted            | Count elements ≤ mid in row-wise sorted matrix; binary search on mid in outer loop                         | min(matrix)            | max(matrix)             | Count elements ≤ mid ≥ k for kth smallest or median            |
+| Kth Smallest Pair Distance  | Pair distance `d`                  | 1 ≤ n ≤ 10⁴, 0 ≤ nums[i] ≤ 10⁶                  | Binary search on distance `d`; inner binary search counts pairs ≤ mid                                      | 0                      | max(nums) - min(nums)   | Count of pairs with distance ≤ mid ≥ k                         |

@@ -1,0 +1,75 @@
+=================Recursion===================
+
+Subset Sum and Combination sums 
+
+✅ MASTER SUMMARY TABLE (WITH PROBLEM STATEMENT + CONSTRAINTS)
+
+| Problem                                              | Problem Statement (Short)                                                                      	| Typical Constraints                 	  | Recurrence                                           	 | Recursive Time      	   | Recursive Space |
+| -----------------------------------------------------| -------------------------------------------------------------------------------------------------- | --------------------------------------- | -------------------------------------------------------- | ----------------------- | ------------------- |
+| Combination Sum I (unlimited use)                    | Find all combinations that sum to target; each number can be used unlimited times.                 | n ≤ 30, nums[i] ≤ 200, target ≤ 500     | `f(i, t) = f(i, t - a[i]) + f(i+1, t)`                   | Exponential (≈ Tⁿ)      | O(T)                |
+| Combination Sum II (use each once, avoid duplicates) | Find unique combinations where each number can be used at most once; input may contain duplicates. | n ≤ 100, nums[i] ≤ 100, target ≤ 30,000 | `f(i, t) = f(i+1, t-a[i]) + f(j, t)` ; j = next distinct | O(2ⁿ)                   | O(n)                |
+| Combination Sum III (pick k numbers from 1…9)        | Choose exactly k numbers from {1..9} that sum to n.                                                | k ≤ 9, n ≤ 60                           | `f(i, k, t) = f(i+1,k-1,t-i)+f(i+1,k,t)`                 | O(2⁹) ≈ constant        | O(9)                |
+| Combination Sum IV (order matters → permutations)    | Count number of ordered sequences whose sum equals target.                                     	| n ≤ 200, target ≤ 1000                  | `dp[t] = Σ dp[t - a[i]]`                                 | Exponential (recursive) | O(T)                |
+| Subset Sum (Decision)                                | Determine if any subset sums to target exactly.                                                    | n ≤ 200, sum ≤ 2000                     | `f(i, t)=f(i+1,t) OR f(i+1,t-a[i])`                      | O(2ⁿ)                   | O(n)                |
+| Count Subsets With Sum                               | Count number of subsets that sum to target.                                                        | n ≤ 200, sum ≤ 2000                     | `count = f(i+1,t) + f(i+1,t-a[i])`                       | O(2ⁿ)                   | O(n)                |
+| Partition Equal Subset Sum                           | Check if array can be split into 2 subsets of equal sum.                                           | n ≤ 200, sum ≤ 2000                     | Reduce to subset sum for T = total/2                     | O(2ⁿ)                   | O(n)                |
+| Minimum Difference Partition                         | Split set into 2 subsets with minimum absolute difference.                                         | n ≤ 200, sum ≤ 2000                     | Compute reachable sums up to total/2                     | O(2ⁿ)                   | O(n)                |
+| Target Sum (assign +/- signs)                        | Count ways to assign + or – signs to reach target.                                                 | n ≤ 20, nums[i] ≤ 1000                  | Reduce to subset sum: `(S+T)/2`                          | O(2ⁿ)                   | O(n)                |
+| Subset With Given Difference                         | Count subsets such that S1 – S2 = diff                                                             | n ≤ 200, sum ≤ 2000                     | subset_sum = (total + diff)/2                            | O(2ⁿ)                   | O(n)                |
+
+
+
+==============Permutations==============
+Which Approach Should You Use?
+| Approach                 | Best For               | Pros                | Cons                 |
+| ------------------------ | ---------------------- | ------------------- | -------------------- |
+| Swap Backtracking        | Low overhead           | No extra arrays     | Harder to reason     |
+| Pick-unused Backtracking | Teaching / simplicity  | Clean logic         | More memory          |
+| Next Permutation         | Sorted results         | Very efficient      | Only works if sorted |
+| Unique-permutation       | Arrays with duplicates | Prevents duplicates | More branching logic |
+
+
+
+================N Queens=============
+🎯 N-Queens Problem – Core Idea
+
+Goal:
+Place N queens on an N × N chessboard such that:
+	No two queens share the same row
+	No two queens share the same column
+	No two queens share the same diagonal
+	
+🧠 How to Solve N-Queens (Backtracking)
+
+We place one queen per row:
+
+Start at row = 0
+Try placing a queen in each column
+Check if placing a queen is safe
+If safe → place queen and recursively place for next row
+If no column works → backtrack (remove queen)
+
+This is depth-first search with pruning using safety checks.
+
+
+====
+Same Col 
+Main Diagonal : [ R - C Value is same ]
+Anti Diagonal : [ R+C Value is same ] 
+
+cols          → columns already occupied
+diag1 (r-c)   → main diagonals occupied
+diag2 (r+c)   → anti-diagonals occupied
+
+
+======Distinct N queens Solutions=====
+To count only distinct solutions:
+
+Approach:
+	Solve N-Queens normally and store the positions of queens per row (e.g., queen_pos[row] = column).
+
+	For each solution, generate all 8 symmetric transformations:
+		Rotate 90°, 180°, 270°
+		Reflect horizontally, vertically, or diagonally
+	Store the canonical form (lexicographically smallest among these 8 forms) in a set.
+	Count the number of unique canonical forms → this gives distinct solutions. 

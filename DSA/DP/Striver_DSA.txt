@@ -1,0 +1,794 @@
+
+
+===============DSA Trees , Graphs and Dynamic Programming ========================
+
+
+----Boundary Traversal (Anti clockwise direction)------
+
+	root 
+	left boundry - leaves 
+	leaves  [Inorder traversal ] 
+	reverse of right boundry - leaves  
+	
+----Vertical Order traversal -----
+root --> vertical = 0 level = 0
+Level Order Traversal 
+complete each level at each step 
+from collections import defaultdict
+
+nodes_map = defaultdict(lambda: defaultdict(list))
+The lambda: part creates a new inner defaultdict(list) each time a missing outer key is accessed.
+So, every outer key (x) gets its own independent inner dictionary.
+
+
+------Top View / Bottom View ------
+For each vertical line (x-coordinate):
+	Top View → node that appears first from the top (minimum depth / smallest y)
+	Bottom View → node that appears last from the bottom (maximum depth / largest y)
+	
+Top and Bottom Views are almost always done using BFS, because BFS processes nodes level by level (top → bottom).
+
+This way:
+The first time you encounter an x, that’s the top view node.
+The last time you encounter an x, that’s the bottom view node.
+
+---Why not DFS 
+DFS explores deep before wide, meaning:
+	It can visit a deep node at column x before a shallower node at the same x.
+	So you can’t guarantee that the first or last node at a given x truly reflects its top/bottom position 
+	unless you explicitly track depths and fix order after traversal.
+
+
+------Bottom View------
+
+
+
+=========================Morris Traversal or Treaded Binary tree========
+Iterative Traversal to avoid recursion stack space 
+
+For a given node current:
+	If current.left is None:
+		Print current.data (for inorder)
+		Move to current.right.
+	Else:
+		Find predecessor of current in left subtree (rightmost node in current.left) [ prev = curr.left ]
+		If predecessor.right is None:
+			Visit current node (Preorder!)
+			Make predecessor.right = current (thread)
+			Move current = current.left.
+		Else (thread exists):
+			Set predecessor.right = None (remove thread)
+			Print current.data (inorder)
+			Move current = current.right.
+
+
+
+=====Algorithms to Look ===
+Morris Traversal 
+Binary Tree to LL 
+Valid BST -- ranges we need to consider 
+Constructing BST from one traversal 
+
+BST Iterator 
+Two sum in BST
+
+Inverted Pairs in BST 
+ 
+
+
+
+
+===================================Dynamic Programming========================
+
+
+1D DP:
+	Climbing Stairs 
+	Frog Jump 
+	Largest sum of subsequence such that no two adjacent elements are included 
+		DP on subsequences 
+	House Robber 
+	
+2D DP :
+	Subset SUM 
+	Knapsack 0/1 : [Fractional knapsack is greedy ] 
+	
+DP on Grids 
+DP on Stocks 
+DP on Strings 
+
+Rod Cutting 
+
+MCM : Matrix Chain Multiplication 
+
+
+LCS : Longest Common Subsequence 
+
+OBST : Optimal Binary Search Trees 
+
+Longest palindrome subsequence 
+
+Edit Distance 
+
+Travelling Sales Person 
+
+========Root DP problems===========
+| #   | DP Category                        | Root Problem (Canonical)                               | DP Relation Formula / Transition                                      	| Mastering This Covers                                                             	|
+| --- | -----------------------------------| -------------------------------------------------------| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 1️ | 1D Linear DP                         | 🟢 Climbing Stairs (ways[i] = ways[i-1] + ways[i-2])   | Each state depends on previous few states                                	| Fibonacci, House Robber, Min Cost Climb, Frog Jump, Jump Game                         |
+| 2️ | 2D String / Subsequence DP           | 🔵 Longest Common Subsequence (LCS)                    | dp[i][j] = 1 + dp[i-1][j-1] if match else max(dp[i-1][j], dp[i][j-1])   	| Edit Distance, Longest Palindromic Subsequence, Min Insertions/Deletions              |
+| 3️ | Subset / Knapsack DP                 | 🟠 0/1 Knapsack Problem                                | dp[i][w] = max(dp[i-1][w], val[i] + dp[i-1][w-wt[i]])                   	| Subset Sum, Partition Equal Subset Sum, Target Sum, Coin Change, Rod Cutting          |
+| 4️ | Grid / Matrix DP                     | 🟡 Minimum Path Sum                                    | dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])                     	| Unique Paths, Maximal Square, Count Paths with Obstacles, Minimum Falling Path        |
+| 5️ | Palindrome / String Partition DP     | 🟣 Longest Palindromic Subsequence                     | LCS(s, reverse(s))                                                       	| Longest Palindromic Substring, Min Insertions for Palindrome, Palindrome Partitioning |
+| 6️ | Subsequence / LIS-type DP            | 🟤 Longest Increasing Subsequence (LIS)                | dp[i] = 1 + max(dp[j]) for j < i and arr[j] < arr[i]                    	| Russian Doll Envelopes, Box Stacking, Bitonic Subsequence, Job Scheduling             |
+| 7️ | Tree DP                              | 🟩 House Robber III (Tree version)                     | dp[node] = max(rob(node.left)+rob(node.right), node.val+skip(children)) 	| Tree Max Path Sum, Diameter, Path Sum, Subtree Sum, LCA DP                            |
+| 8️ | Interval DP                          | 🟧 Matrix Chain Multiplication (MCM)                   | dp[i][j] = min(dp[i][k]+dp[k+1][j]+cost)                                	| Burst Balloons, Boolean Parenthesization, Stick Cutting, Merge Stones                 |
+| 9️ | Bitmask DP                           | 🟥 Travelling Salesman Problem (TSP)                   | dp[mask][i] = min(dp[mask ^ (1<<i)][j] + cost[j][i])                    	| Job Assignment, Subset Optimization, Graph Visit Problems                             |
+| 10| Hybrid (DP + Greedy / Binary Search) | ⚙️ Weighted Job Scheduling                             | Sort by end time, dp[i] = max(dp[i-1], profit[i] + dp[lastNonConflict]) 	| LIS with Binary Search, Split Array Largest Sum, Schedule Optimization                |
+
+
+
+
+1D Linear DP
+| Problem                              | Type                   | Notes                       |
+| -------------------------------------| ---------------------- | --------------------------- |
+| Fibonacci Series                     | Basic                  | Classic recurrence base     |
+| Climbing Stairs                      | Counting ways          | dp[i] = dp[i-1] + dp[i-2] |
+| Min Cost Climbing Stairs             | Optimization           | cost + min of previous      |
+| House Robber (I / II)                | Non-adjacent selection | skip one constraint         |
+| Frog Jump (k jumps)                  | Min energy             | dp[i] = min(dp[j] + cost) |
+| Maximum Sum Subarray (Kadane)        | Max segment sum        | O(1) space optimization     |
+| Maximum Sum Non-Adjacent Subsequence | Subset choice          | Similar to House Robber     |
+
+2D DP on Subsequences / Strings
+| Problem                                             | Type                           | Company Focus   |
+| --------------------------------------------------- | ------------------------------ | --------------- |
+| Longest Common Subsequence (LCS)                | Sequence comparison            | Google, Meta    |
+| Longest Common Substring                        | Variation                      |                 |
+| Edit Distance (Levenshtein)                     | Transform one string → another | Microsoft, Meta |
+| Minimum Insertions/Deletions                    | Edit Distance variant          |                 |
+| Longest Palindromic Subsequence                 | LCS with reverse string        |                 |
+| Palindrome Partitioning (min cuts)              | Palindrome DP                  | Amazon          |
+| Regular Expression Matching / Wildcard Matching | Pattern DP                     | Netflix, Google |
+
+
+Subset / Knapsack DP
+
+| Problem                                 | Type                     | Companies |
+| --------------------------------------- | ------------------------ | --------- |
+| 0/1 Knapsack                        | Core pattern             | All FAANG |
+| Subset Sum                          | Boolean variant          | Google    |
+| Partition Equal Subset Sum          | Balanced split           | Meta      |
+| Count of Subsets with Given Sum     | Counting variant         |           |
+| Target Sum / Expression Evaluate    | ± signs to reach target  | Microsoft |
+| Coin Change (min ways / count ways) | Unbounded Knapsack       | Amazon    |
+| Rod Cutting                         | Unbounded profit version |           |
+
+
+Grid / Matrix DP
+
+| Problem                                  | Type                  | Companies       |
+| ---------------------------------------- | --------------------- | --------------- |
+| Minimum Path Sum / Unique Paths      | Grid movement         | Google, Netflix |
+| Maximal Square / Rectangle in Matrix | DP in 2D              | Microsoft       |
+| Count Paths with Obstacles           | Conditional traversal |                 |
+| Minimum Falling Path Sum             | Downward DP           |                 |
+
+
+DP on Strings / Palindromes
+| Problem                               | Type                       | Notes  |
+| ------------------------------------- | -------------------------- | ------ |
+| Longest Palindromic Substring     | Expand-around-center or DP | Google |
+| Longest Palindromic Subsequence   | LCS-based                  | Meta   |
+| Minimum Insertions for Palindrome | LCS variant                |        |
+
+DP on Subsequences / Subsets (Combinatorial)
+| Problem                              | Example                 |
+| ------------------------------------ | ----------------------- |
+| Count Increasing Subsequences        | LIS count               |
+| Longest Increasing Subsequence (LIS) | O(n²) or O(n log n)     |
+| Longest Bitonic Subsequence          | increasing + decreasing |
+| Box Stacking                         | Variation of LIS        |
+| Russian Doll Envelopes               | LIS on pairs            |
+
+
+Tree DP / Graph DP
+
+| Problem                                      | Example                           |
+| ---------------------------------------------| --------------------------------- |
+| Diameter of Tree                             | max(left_height + right_height)   |
+| Max Path Sum in Binary Tree                  | sum optimization                  |
+| Count of Paths with Sum K                    | prefix sum + recursion            |
+| House Robber III (tree)                      | choose child or not               |
+| Burning Tree / Time to Infect Tree           | BFS/DFS hybrid                    |
+| LCA / Ancestor Queries (DP + Binary Lifting) | Graph DP variant                  |
+
+
+Interval DP
+| Problem                                  | Example               |
+| ---------------------------------------- | --------------------- |
+| Matrix Chain Multiplication (MCM)        | Parenthesization      |
+| Burst Balloons                           | Reverse MCM           |
+| Boolean Parenthesization                 | Expression evaluation |
+| Palindrome Partitioning (min cuts)       | Interval form         |
+| Minimum Cost to Merge Stones / Cut Stick | Segment DP            |
+
+
+Bitmask DP
+| Problem                           | Example       |
+| ----------------------------------| ------------- |
+| Travelling Salesman Problem (TSP) | dp[mask][i]   |
+| Count Subsets with Conditions     |               |
+| Job Scheduling / Assignments      |               |
+
+DP + Binary Search / Greedy Hybrid
+| Problem                              | Example                |
+| -------------------------------------| ---------------------- |
+| LIS (O(n log n))                     | patience sorting       |
+| Weighted Job Scheduling              | DP + binary search     |
+| Minimize Max Distance to Gas Station | Binary search + greedy |
+| Split Array Largest Sum              | DP + binary search     |
+
+
+
+
+
+======Ninja Training========
+You are given n days of training.
+On each day, a ninja can perform 3 different activities: 0, 1, or 2.
+Each activity gives some points: points[day][activity].
+Constraint: The ninja cannot perform the same activity on two consecutive days.
+
+points[day][activity] [ Nx3 --> On ith day for Jth task what are the points ]
+
+dp[n-1][k] : statrting case , where K is the number of tasks [0,1,...k-1] , here all are zero based indexes 
+
+Recurrance :
+dp[day][last] = max( points[day][i] + dp[day-1][i]) for all i != last )
+
+Base Case :
+dp[0][last] = max(points[0][i]) for i != last
+
+this can be solved 2 ways 
+
+1️⃣ Approach 1 — DP by task (dp[day][task])
+
+	DP definition: dp[day][task] = max points obtainable up to this day if you do task today.
+
+	Columns: 3 (one per task)
+
+	Base case: first day’s points are simply the task points: dp[0][task] = points[0][task]
+
+	Transition:
+
+		dp[day][task] = points[day][task] + max(
+					dp[day-1][prev] for prev in range(3) if prev != task
+				)
+
+	Intuition: “Pick a task today; pick the best possible from yesterday except the same task.”
+
+	Pros: Simple, natural to think about. Easy to implement.
+
+	Cons: Cannot directly extend if you want to track previous task for memoization in recursion; less uniform if tasks increase.
+
+2️⃣ Approach 2 — DP by previous task (dp[day][last])
+
+	DP definition: dp[day][last] = max points obtainable up to this day if previous task (yesterday) was last.
+
+	Columns: 4 (0,1,2 = previous tasks, 3 = no restriction)
+
+	Base case: Requires thinking: “If yesterday’s task was last, which tasks can I do today?”
+
+	Transition:
+		 dp[day][last] = max(
+                points[day][task] + dp[day-1][task]
+                for task in range(3) if task != last
+            )
+
+
+	Intuition: Uniform way to handle memoization in recursion, because last becomes a state variable.
+
+	Pros: Works nicely in recursive + memoization solutions.
+
+	Cons: Slightly less intuitive; more columns in DP table; base case needs a small trick (last=3 for no restriction).
+
+
+
+========DP on Grid/Matrix ========
+
+Tabulation approach is opposite of bottom up , meaning : if we start from  (n-1,n-1) in recursion we start from (0,0) for loops , vice versa 
+Count Paths 
+Count Paths with Obstacles 
+MaxPath sum 
+Max Pathsum with constraints 
+Triangles 
+2 start points 
+
+
+====Count Paths====
+You have an n × m grid.
+You start at top-left (0,0) and want to reach bottom-right (n-1,m-1).
+You can move only right or down at each step.
+Find the number of distinct paths.
+
+Approach 1: Combinatorics
+
+Each path consists of (n-1) downs and (m-1) rights.
+
+Total moves = (n-1) + (m-1) = n + m - 2
+
+Number of paths = choose positions for downs (or rights): C(n+m-2 , n-1) or  C(n+m-2 , m-1)
+
+Recursion :  dp[i][j] = paths(i - 1, j) + paths(i, j - 1) ( paths(i,j) )
+
+
+
+=====Grid with Obstacles====
+ if grid[i][j] == 1: add this check in the above problem 
+      dp[i][j] = 0
+	  
+======Minimum path sum====
+ up = grid[i][j] + (dp[i - 1][j]
+ left = grid[i][j] + (dp[i][j - 1]
+ dp[i][j] = min(up, left)
+ 
+ ======DP on Triangle Grids=====
+ No fixed ending paths 
+ 
+===== Variable Starting point to Variable ending point =========
+
+| Operation                  | Meaning                      | Independent? | Effect on grid if dp changes |
+| ---------------------------| ---------------------------- | ------------ | -------------------------------- |
+| dp[n-1] = grid[n-1]        | Reference assignment         | ❌ No         | ✅ Affects original               |
+| dp[n-1] = grid[n-1][:]     | Shallow copy                 | ✅ Yes        | ❌ Does not affect original       |
+| dp[n-1] = grid[n-1].copy() | Shallow copy (same as slice) | ✅ Yes        | ❌ Does not affect original       |
+
+
+|  No.  | Code Snippet                                                   	| Type of Copy                	| Independent Copy (No Shared Reference)? 	| Time Complexity 	| Readability     	| Safety (Mutation Risk)                  	| Typical Use Case                    | Verdict                      |
+| :---: | :------------------------------------------------------------- 	| :-------------------------- 	| :-------------------------------------:   | :-------------- 	| :-------------- 	| :-------------------------------------- 	| :---------------------------------- | :--------------------------- |
+| ① 	| dp[n-1] = grid[n-1]                                          		| Reference Assignment    		|                   ❌ No                 	| ⚡ O(1)          	| ✅ Simple        	| ⚠️ High (dp & grid share same list) 		| When you never modify that row      | ❌ Avoid in DP            |
+| ② 	| dp[n-1] = grid[n-1][:]                                       		| Shallow Copy (Slice)    		|                  ✅ Yes                 	| ⚡ O(m)          	| ✅ Very Clean    	| ✅ Safe                              		| Standard DP base row initialization | ✅ Best Choice            |
+| ③ 	| dp[n-1] = grid[n-1].copy()                                   		| Shallow Copy (Built-in) 		|                  ✅ Yes                 	| ⚡ O(m)          	| ✅ Very Readable 	| ✅ Safe                              		| Same as slice, more explicit        | ✅ Excellent Choice       |
+| ④ 	|  for j in range(m): dp[n-1][j] = grid[n-1][j] 				 	| Element-wise Copy       		|                  ✅ Yes                 	| 🐢 O(m)         	| ⚙️ Verbose      	| ✅ Safe                              		| When copying with extra logic       | ⚪ Safe but not efficient |
+
+
+
+ 
+1. Ninja Training
+ | # | DP Definition | Meaning                                                                                     |
+| - | ----------------- | ----------------------------------------------------------------------------------------------- |
+| 1 | dp[day][task]   | Maximum points up to this day if you do task today.                                   |
+| 2 | dp[day][last]   | Maximum points up to this day if your previous task was last (can’t repeat it today). |
+
+ 
+Dynamic Programming — Grid / Path  Summary
+| Problem                            | DP Definition (Top-Down)                                                                   | DP Definition (Bottom-Up)                                             | Base Case(s)                                                   | Out of Boundary Condition                       | Recurrence (Forward / Backward)                                                                                          | Target / Answer             | Intuition / Direction                        |
+| -----------------------------------| -------------------------------------------------------------------------------------------| ----------------------------------------------------------------------| ---------------------------------------------------------------| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------| ----------------------------| -------------------------------------------- |
+| Ninja Training                     | f(day, last) = max points up to day if previous task was last                              | dp[day][last] = max points up to this day if previous task was last   | f(0, last) = max(points[0][i] for i != last)                   | if task == last → skip                          | f(day, last) = max(points[day][task] + f(day-1, task))                                                                   | f(n-1, 3)                   | Build upward (day by day)                    |
+| Falling Path Sum (Min/Max)         | f(i, j) = best path value reaching (i, j) from top                                         | dp[i][j] = best path value reaching (i, j)                            | f(0, j) = matrix[0][j]                                         | if j < 0 or j >= n → ∞ (for min) / -∞ (for max) | f(i, j) = matrix[i][j] + min/max(f(i-1, j-1), f(i-1, j), f(i-1, j+1))                                                    | min/max over last row       | Expand downward (top → bottom)               |
+| Triangle Path Sum                  | f(i, j) = min path sum from top to (i, j)                                                  | dp[i][j] = min path sum from top                                      | f(0, 0) = tri[0][0]                                            | if j < 0 or j > i → ∞                           | f(i, j) = tri[i][j] + min(f(i-1, j-1), f(i-1, j))                                                                        | min over last row           | Expand downward (triangle flow)              |
+| Triangle Path Sum (Reverse)        | f(i, j) = min path sum from (i, j) to bottom                                               | dp[i][j] = min cost from (i, j) to bottom                             | f(n-1, j) = tri[n-1][j]                                        | if i or j out of range → ∞                      | f(i, j) = tri[i][j] + min(f(i+1, j), f(i+1, j+1))                                                                        | f(0, 0)                     | Collapse upward (bottom → top)               |
+| Grid Path Sum (Min)                | f(i, j) = min cost to reach (i, j)                                                         | dp[i][j] = min cost up to (i, j)                                      | f(0, 0) = grid[0][0]                                           | if i < 0 or j < 0 → ∞                           | f(i, j) = grid[i][j] + min(f(i-1, j), f(i, j-1))                                                                         | f(m-1, n-1)                 | Forward accumulation                         |
+| Grid Path Sum (Reverse)            | f(i, j) = min cost from (i, j) to bottom-right                                             | dp[i][j] = min cost from (i, j) onward                                | f(m-1, n-1) = grid[m-1][n-1]                                   | if i >= m or j >= n → ∞                         | f(i, j) = grid[i][j] + min(f(i+1, j), f(i, j+1))                                                                         | f(0, 0)                     | Backward planning                            |
+| Ninja & His Friend (Cherry Pickup) | f(i, j1, j2) = max cherries collected when both ninjas at (i, j1) and (i, j2) on row i     | dp[i][j1][j2] = max cherries up to row i                              | f(0, j1, j2) = grid[0][j1] + (grid[0][j2] if j1 != j2)         | if j1 < 0 or j1 >= n or j2 < 0 or j2 >= n → -∞  | f(i, j1, j2) = grid[i][j1] + (grid[i][j2] if j1 != j2) + max(f(i-1, pj1, pj2)) for pj1, pj2 in [j1-1..j1+1]×[j2-1..j2+1] | max over all f(m-1, j1, j2) | Two-agent falling path (3D DP, top → bottom) |
+| Ninja & His Friend (Reverse)       | f(i, j1, j2) = max cherries from (i, j1), (i, j2) to bottom                                | dp[i][j1][j2] = max cherries from row i                               | f(m-1, j1, j2) = grid[m-1][j1] + (grid[m-1][j2] if j1 != j2)   | Same as above                                   | f(i, j1, j2) = grid[i][j1] + (grid[i][j2] if j1 != j2) + max(f(i+1, nj1, nj2))                                           | f(0, 0, n-1)                | Backward planning of two-agent path          |
+
+
+
+=====================DP on Stocks=======================
+
+
+============DP on Subsequences/Subsets =======
+A subsequence of a sequence is a new sequence that can be derived by deleting zero or more elements from the original sequence 
+without changing the order of the remaining elements
+
+
+
+1 ROOT IDEA — “Choice Pattern” (Subsequence/Subsets DP)
+
+	Every subsequence/subset problem is built on making a binary choice:
+
+	For each element arr[i],
+	🔹 either take (include) it
+	🔹 or not take (exclude) it.
+	​
+	f(i) = min/max/sum/count(include a[i] or exclude a[i]) 
+	This is the root recurrence behind:
+		Subset Sum
+		Count of Subsequences
+		Longest Increasing Subsequence
+		Longest Common Subsequence
+		Partition Equal Subset Sum
+		Knapsack
+
+🌳 2️ TYPES OF SUBSEQUENCE / SUBSET DPs
+| Type         | Example Problems                               | Goal                                       |
+| -------------| ---------------------------------------------- | ------------------------------------------ |
+| Choice-based | Subset Sum, Partition Sum, Knapsack            | Choose items satisfying condition          |
+| Order-based  | LCS, LIS, Edit Distance                        | Maintain order, optimize length/value      |
+| Count-based  | Count Subsequences with sum or property        | Count how many subsequences meet condition |
+| String-based | Palindromic Subsequence, Distinct Subsequences | Work over character sequences              |
+
+
+🧩 3️ ROOT PROBLEM FOR EACH FAMILY
+| Family                     | Root Problem                              | Description                                                    |
+| -------------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| Subset / Choice DP     | Subset Sum Problem                    | Can we form target sum using some subset?                      |
+| Order / Sequence DP    | Longest Common Subsequence (LCS)      | Find longest sequence present in both arrays maintaining order |
+| Increasing Sequence DP | Longest Increasing Subsequence (LIS)  | Longest subsequence with increasing order                      |
+| Counting Variant       | Count Subsequences with Given Sum     | Count ways instead of just boolean                             |
+| Knapsack               | 0/1 Knapsack                          | Maximize profit subject to weight constraint                   |
+| Palindrome DP          | Longest Palindromic Subsequence (LPS) | Reverse + LCS pattern                                          |
+| Edit Distance          | Minimum Edit Distance                 | Min operations (insert/delete/replace) to convert A→B          |
+
+
+🧠 4️ RECURRENCE DEFINITIONS & INTUITIONS
+
+| Problem                             | DP Definition                                                  | Recurrence                                                        | Base Case                                 | Target            | Intuition                         |
+| ----------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------- | ----------------- | --------------------------------- |
+| Subset Sum                      | dp[i][target] = True if subset of arr[0..i] makes sum=target | dp[i][t] = dp[i-1][t] or dp[i-1][t-arr[i]]                      | dp[0][arr[0]] = True, dp[i][0] = True | dp[n-1][target] | Pick or not pick each element     |
+| Count Subsequences Sum          | dp[i][t] = #ways to get sum t using arr[0..i]                | dp[i][t] = dp[i-1][t] + dp[i-1][t-arr[i]]                       | dp[i][0]=1                              | dp[n-1][target] | Counting instead of boolean       |
+| 0/1 Knapsack                    | dp[i][W] = max value from first i items with capacity W      | dp[i][W] = max(dp[i-1][W], val[i] + dp[i-1][W-wt[i]])           | dp[0][w] = val[0] if wt[0] ≤ w          | dp[n-1][W]      | Include or exclude each item      |
+| LCS                             | dp[i][j] = LCS length of A[0..i] & B[0..j]                   | if match: 1+dp[i-1][j-1] else max(dp[i-1][j],dp[i][j-1])      | dp[i][0]=dp[0][j]=0                     | dp[n-1][m-1]    | Compare chars, skip or include    |
+| LIS                             | dp[i] = LIS ending at i                                      | dp[i] = 1 + max(dp[j]) for all j<i if arr[j]<arr[i]             | dp[0]=1                                 | max(dp[i])      | Build longer sequences            |
+| Edit Distance                   | dp[i][j] = min ops to convert A[0..i]→B[0..j]                | if match: dp[i-1][j-1] else 1 + min(ins, del, rep)            | dp[i][0]=i, dp[0][j]=j                | dp[n][m]        | Transform one string into another |
+| Longest Palindromic Subsequence | dp[i][j] = length of LPS in s[i..j]                          | if s[i]==s[j]: 2+dp[i+1][j-1] else max(dp[i+1][j],dp[i][j-1]) | dp[i][i]=1                              | dp[0][n-1]      | LCS(s, reverse(s)) pattern        |
+
+
+
+🪜 5 RELATION TREE (Root → Applications)
+Choice DP (Include/Exclude)
+├── Subset Sum (boolean)
+│   ├── Count Subsequences (count)
+│   ├── Equal Partition / Target Sum
+│   └── Knapsack (maximize)
+│
+├── Sequence DP (Order matters)
+│   ├── LCS
+│   │   ├── LPS (via reverse)
+│   │   └── Edit Distance (variation)
+│   └── LIS
+│       ├── Variants: Bitonic, Increasing Paths
+
+
+6 Summary Table — Subsequence/Subsets DP
+| Problem Type       | State    | Base Case    | Recurrence                                                   | Target     | Root Problem               |
+| -------------------| -------- | ------------ | ------------------------------------------------------------ | ---------- | -------------------------- |
+| Subset Sum         | dp[i][t] | t=0→True     | dp[i][t]=dp[i-1][t] or dp[i-1][t-arr[i]]                     | dp[n-1][T] | Include/Exclude choice     |
+| Count Subsequences | dp[i][t] | t=0→1        | dp[i][t]=dp[i-1][t]+dp[i-1][t-arr[i]]                        | dp[n-1][T] | Include/Exclude counting   |
+| Knapsack           | dp[i][W] | W=0→0        | dp[i][W]=max(dp[i-1][W], val[i]+dp[i-1][W-wt[i]])            | dp[n-1][W] | Maximize gain              |
+| LCS                | dp[i][j] | i=0/j=0→0    | match→1+dp[i-1][j-1] else→max(dp[i-1][j],dp[i][j-1])         | dp[n][m]   | Match ordered elements     |
+| LIS                | dp[i]    | dp[0]=1      | dp[i]=1+max(dp[j]) if arr[j]<arr[i]                          | max(dp[i]) | Longest increasing order   |
+| Edit Distance      | dp[i][j] | i=0→j, j=0→i | if match→dp[i-1][j-1], else→1+min(ins,del,rep)               | dp[n][m]   | Convert one seq to another |
+| LPS                | dp[i][j] | i==j→1       | if s[i]==s[j]→2+dp[i+1][j-1] else→max(dp[i+1][j],dp[i][j-1]) | dp[0][n-1] | Palindrome by expansion    |
+
+
+| Problem       | DP Definition                                                 | Forward Recurrence                                                                        | Backward Recurrence                                     | Base Case              | Out of Bounds | Target        | Recurrence Explanation                                                                                                    |
+| ------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------- | ------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Subset Sum    | dp[i][s] = True if sum s can be formed using first i elements | dp[i][s] = dp[i-1][s] or dp[i-1][s-arr[i-1]]                                              | dp[i][s] = dp[i+1][s] or dp[i+1][s-arr[i]]              | dp[0][0]=True          | s<0 → False   | dp[n][target] | Forward: Consider including/excluding current element. Backward: Start from target sum and check inclusion possibilities. |
+| Knapsack 0/1  | dp[i][w] = max value with first i items and capacity w        | dp[i][w] = max(dp[i-1][w], val[i-1]+dp[i-1][w-wt[i-1]])                                   | dp[i][w] = max(dp[i+1][w], val[i-1]+dp[i+1][w-wt[i-1]]) | dp[0][w]=0             | w<0 → -∞      | dp[n][W]      | Forward: Include or exclude current item. Backward: Compute max value starting from last item.                            |
+| LCS           | dp[i][j] = LCS length of s1[:i] and s2[:j]                    | if s1[i-1]==s2[j-1]: dp[i][j]=1+dp[i-1][j-1] else max(dp[i-1][j],dp[i][j-1])              | Same as forward in reverse                              | dp[0][]=dp[][0]=0    | N/A           | dp[n][m]      | Forward: Compare characters. Backward: Trace from dp[n][m] to reconstruct LCS.                                            |
+| LIS           | dp[i] = length of LIS ending at i                             | dp[i] = 1 + max(dp[j]) for all j<i if arr[j]<arr[i]                                       | dp[i] = 1 + max(dp[j]) for j>i if arr[j]>arr[i]         | dp[i]=1                | N/A           | max(dp)       | Forward: Build LIS from start. Backward: Build LIS from end.                                                              |
+| Edit Distance | dp[i][j] = min ops to convert s1[:i] → s2[:j]                 | if s1[i-1]==s2[j-1]: dp[i][j]=dp[i-1][j-1] else 1+min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]) | Same logic from end                                     | dp[i][0]=i, dp[0][j]=j | N/A           | dp[n][m]      | Forward: Transform prefixes. Backward: Transform suffixes.                                                                |
+| LPS           | dp[i][j] = length of longest palindromic subseq in s[i:j+1]   | if s[i]==s[j]: dp[i][j]=2+dp[i+1][j-1] else max(dp[i+1][j],dp[i][j-1])                    | Same logic from reverse                                 | dp[i][i]=1             | i>j → 0       | dp[0][n-1]    | Forward: Expand subsequence from length 1. Backward: Collapse from ends.                                                  |
+
+
+| Root Problem                         | Variant                      | DP Definition                                                 | Tabulation Recurrence                                                                                   | Memoization Recurrence                                                                                                                                   | Backward Recurrence                                     | Base Case                                     | Out of Bounds | Target                           | Recurrence Explanation                              |
+| ------------------------------------ | ---------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------- | ------------- | -------------------------------- | --------------------------------------------------- |
+| Subset Sum / 0-1 Knapsack        	   | Subset Sum                   | dp[i][s]=True if sum s can be formed using first i elements | dp[i][s]=dp[i-1][s] or dp[i-1][s-arr[i-1]]                                                            | if i==0: return s==0 else return memo[i][s] or (memo[i-1][s-arr[i-1]] if s>=arr[i-1] else False)                                                       | dp[i][s]=dp[i+1][s] or dp[i+1][s-arr[i]]              | dp[0][0]=True                               			| s<0 → False | dp[n][target]                  | Include/exclude current element.                    |
+|                                      | Count Subsets with Sum K     | dp[i][s]=# subsets with sum s using first i elements        | dp[i][s]=dp[i-1][s]+dp[i-1][s-arr[i-1]]                                                               | if i==0: return 1 if s==0 else 0 else return memo[i][s]+(memo[i-1][s-arr[i-1]] if s>=arr[i-1] else 0)                                                  | Same                                                    | dp[0][0]=1                                  		| s<0 → 0     | dp[n][K]                       | Count ways including/excluding element.             |
+|                                      | Partition Equal Sum          | dp[i][s]=True if subset sum s possible                      | Same                                                                                                  | if i==0: return s==0 else return memo[i][s] or (memo[i-1][s-arr[i-1]] if s>=arr[i-1] else False)                                                       | Same                                                    | dp[0][0]=True                               		| s<0 → False | dp[n][sum/2]                   | Forward: subset sums up to half total.              |
+|                                      | Min Subset Sum Diff          | dp[i][s]=True if subset sum s possible                      | Same                                                                                                  | Same                                                                                                                                                   | Same                                                    | dp[0][0]=True                               		| s<0 → False | Find max s≤sum/2                 | Minimize difference by choosing closest subset sum. |
+|                                      | 0/1 Knapsack                 | dp[i][w]=max value with first i items & capacity w          | dp[i][w]=max(dp[i-1][w], val[i-1]+dp[i-1][w-wt[i-1]])                                                 | if i==0: return 0 else return max(memo[i-1][w], val[i-1]+(memo[i-1][w-wt[i-1]] if w>=wt[i-1] else 0))                                                  | dp[i][w]=max(dp[i+1][w], val[i-1]+dp[i+1][w-wt[i-1]]) | dp[0][w]=0                                  			| w<0 → -∞    | dp[n][W]                       | Include/exclude item i to maximize value.           |
+| Unbounded Knapsack / Coin Change     | Coin Change – Number of Ways | dp[i][t]=# ways to make t using first i coins               | dp[i][t]=dp[i-1][t]+dp[i][t-coins[i]]                                                                 | if i==0: return 1 if t==0 else 0 else return memo[i-1][t]+(memo[i][t-coins[i]] if t>=coins[i] else 0)                                                  | Same                                                    | dp[0][0]=1                                  		| t<0 → 0     | dp[n][target]                  | Forward: pick or skip coin i (unlimited).           |
+|                                      | Coin Change – Min Coins      | dp[i][t]=min coins to make t using first i coins            | dp[i][t]=min(dp[i-1][t], 1+dp[i][t-coins[i]])                                                         | if i==0: return 0 if t==0 else inf else return min(memo[i-1][t], 1+(memo[i][t-coins[i]] if t>=coins[i] else inf))                                      | Same                                                    | dp[0][0]=0                                  		| t<0 → ∞     | dp[n][target]                  | Forward: pick coin i multiple times or skip.        |
+|                                      | Rod Cutting                  | dp[i][L]=max profit for rod length L using first i pieces   | dp[i][L]=max(dp[i-1][L], price[i]+dp[i][L-(i+1)])                                                     | if i==0: return (L//1)price[0] else return max(memo[i-1][L], price[i]+(memo[i][L-(i+1)] if L>=(i+1) else 0))                                           | Same                                                    | dp[0][L]=(L//1)price[0]                    		| L<0 → -∞    | dp[n][N]                       | Pieces can be reused; unbounded knapsack analogy.   |
+| LCS / String DP                      | LCS                          | dp[i][j]=length of LCS of s1[:i] & s2[:j]                   | if s1[i-1]==s2[j-1]: dp[i][j]=1+dp[i-1][j-1] else max(dp[i-1][j],dp[i][j-1])                          | if i==0 or j==0: return 0 else return 1+memo[i-1][j-1] if s1[i-1]==s2[j-1] else max(memo[i-1][j], memo[i][j-1])                                        | Same                                                    | dp[0][j]=0, dp[i][0]=0                      		| N/A           | dp[n][m]                       | Forward: include match or skip.                     |
+|                                      | Edit Distance                | dp[i][j]=min ops to convert s1[:i] → s2[:j]                 | if s1[i-1]==s2[j-1]: dp[i][j]=dp[i-1][j-1] else 1+min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1])             | if i==0: return j; if j==0: return i else if s1[i-1]==s2[j-1]: return memo[i-1][j-1] else return 1+min(memo[i-1][j], memo[i][j-1], memo[i-1][j-1])     | Same                                                    | dp[i][0]=i, dp[0][j]=j                      		| N/A           | dp[n][m]                       | Transform prefixes forward; suffixes backward.      |
+|                                      | LCS of 3 Strings             | dp[i][j][k]=LCS length                                      | if s1[i-1]==s2[j-1]==s3[k-1]: 1+dp[i-1][j-1][k-1] else max(dp[i-1][j][k],dp[i][j-1][k],dp[i][j][k-1]) | if i==0 or j==0 or k==0: return 0 else if s1[i-1]==s2[j-1]==s3[k-1]: 1+memo[i-1][j-1][k-1] else max(memo[i-1][j][k], memo[i][j-1][k], memo[i][j][k-1]) | Same                                                    | dp[0][..][..]=dp[..][0][..]=dp[..][..][0]=0 		| N/A           | dp[n][m][o]                    | Forward: include match or skip char.                |
+| LIS / Sequence DP                    | LIS                          | dp[i]=length of LIS ending at i                             | dp[i]=1+max(dp[j] for j<i if arr[j]<arr[i])                                                           | if i==0: return 1 else return 1+max(memo[j] for j<i if arr[j]<arr[i])                                                                                  | dp[i]=1+max(dp[j] for j>i if arr[j]>arr[i])           | dp[i]=1                                     			| N/A           | max(dp)                        | Forward: left→right. Backward: right→left.          |
+|                                      | Max Sum Increasing Subseq    | dp[i]=max sum of increasing subseq ending at i              | dp[i]=arr[i]+max(dp[j] for j<i if arr[j]<arr[i])                                                      | if i==0: return arr[0] else return arr[i]+max(memo[j] for j<i if arr[j]<arr[i])                                                                        | Same                                                    | dp[i]=arr[i]                                		| N/A           | max(dp)                        | Max sum instead of length.                          |
+|                                      | Count Number of LIS          | dp[i]=# LIS ending at i                                     | dp[i]=sum(count[j] for j<i if arr[j]<arr[i] and dp[j]+1==dp[i])                                       | if i==0: return 1 else sum(memo[j] for j<i if arr[j]<arr[i] and memo[j]+1==memo[i])                                                                    | Same                                                    | dp[i]=1                                     		| N/A           | sum of counts                    | Count sequences ending at i.                        |
+| Palindrome / String DP               | LPS                          | dp[i][j]=length of longest palindromic subseq in s[i:j+1]   | if s[i]==s[j]: dp[i][j]=2+dp[i+1][j-1] else max(dp[i+1][j],dp[i][j-1])                                | if i>j: return 0; if i==j: return 1 else if s[i]==s[j]: return 2+memo[i+1][j-1] else max(memo[i+1][j], memo[i][j-1])                                   | Same                                                    | dp[i][i]=1                                  		| i>j →0      | dp[0][n-1]                     | Expand from length 1 forward/backward.              |
+|                                      | Min Insertions to Palindrome | dp[i][j]=min insertions to make s[i:j+1] palindrome         | if s[i]==s[j]: dp[i][j]=dp[i+1][j-1] else 1+min(dp[i+1][j],dp[i][j-1])                                | if i>=j: return 0 else if s[i]==s[j]: return memo[i+1][j-1] else 1+min(memo[i+1][j], memo[i][j-1])                                                     | Same                                                    | dp[i][i]=0                                  		| i>j→0       | dp[0][n-1]                     | Add insertions to match ends.                       |
+|                                      | Min Deletions to Palindrome  | Same as above                                               | Same                                                                                                  | Same                                                                                                                                                   | dp[i][i]=0                                            | i>j→0                                       			| dp[0][n-1]  | Remove chars to make palindrome. |                                                     |
+| Grid / Matrix DP                     | Min Path Sum                 | dp[i][j]=min sum from (0,0) to (i,j)                        | dp[i][j]=grid[i][j]+min(dp[i-1][j],dp[i][j-1])                                                        | if i<0 or j<0: return inf; if i==0 and j==0: return grid[0][0] else return grid[i][j]+min(memo[i-1][j], memo[i][j-1])                                  | Same from bottom-right                                  | dp[0][0]=grid[0][0]                         		| i<0,j<0→∞   | dp[n-1][m-1]                   | Forward: sum top-left→bottom-right.                 |
+|                                      | Unique Paths                 | dp[i][j]=# ways to reach (i,j)                              | dp[i][j]=dp[i-1][j]+dp[i][j-1]                                                                        | if i<0 or j<0: return 0; if i==0 and j==0: return 1 else return memo[i-1][j]+memo[i][j-1]                                                              | Same                                                    | dp[0][0]=1                                  		| N/A           | dp[n-1][m-1]                   | Count all down/right paths.                         |
+|                                      | Minimum Cost Path            | dp[i][j]=min cost to reach (i,j)                            | dp[i][j]=cost[i][j]+min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1])                                           | if i<0 or j<0: return inf; if i==0 and j==0: return cost[0][0] else return cost[i][j]+min(memo[i-1][j], memo[i][j-1], memo[i-1][j-1])                  | Same                                                    | dp[0][0]=cost[0][0]                         		| N/A           | dp[n-1][m-1]                   | Consider diagonal moves.                            |
+
+
+
+
+
+| Root Problem                         | Variant                          | DP Definition                                                 | Forward Recurrence                                                                                      | Backward Recurrence                                     | Base Case                                      | Out of Bounds | Target                           | Recurrence Explanation                              |
+| ------------------------------------ | -------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------- | ------------- | -------------------------------- | --------------------------------------------------- |
+| Subset Sum / 0-1 Knapsack        	   | Subset Sum                       | dp[i][s]=True if sum s can be formed using first i elements | dp[i][s]=dp[i-1][s] or dp[i-1][s-arr[i-1]]                                                            | dp[i][s]=dp[i+1][s] or dp[i+1][s-arr[i]]              | dp[0][0]=True                                | s<0 → False | dp[n][target]                  | Include/exclude current element.                    |
+|                                      | Count Subsets with Sum K         | dp[i][s]=# subsets with sum s using first i elements        | dp[i][s]=dp[i-1][s]+dp[i-1][s-arr[i-1]]                                                               | Same                                                    | dp[0][0]=1                                   | s<0 → 0     | dp[n][K]                       | Count ways including/excluding element.             |
+|                                      | Partition Equal Sum              | dp[i][s]=True if subset sum s possible                      | Same                                                                                                    | Same                                                    | dp[0][0]=True                                | s<0 → False | dp[n][sum/2]                   | Forward: subset sums up to half total.              |
+|                                      | Min Subset Sum Diff              | dp[i][s]=True if subset sum s possible                      | Same                                                                                                    | Same                                                    | dp[0][0]=True                                | s<0 → False | Find max s≤sum/2                 | Minimize difference by choosing closest subset sum. |
+|                                      | 0/1 Knapsack                     | dp[i][w]=max value with first i items & capacity w          | dp[i][w]=max(dp[i-1][w], val[i-1]+dp[i-1][w-wt[i-1]])                                                 | dp[i][w]=max(dp[i+1][w], val[i-1]+dp[i+1][w-wt[i-1]]) | dp[0][w]=0                                   | w<0 → -∞    | dp[n][W]                       | Include/exclude item i to maximize value.           |
+
+| Unbounded Knapsack / Coin Change 	   | Coin Change – Number of Ways     | dp[i][t]=# ways to make t using first i coins               | dp[i][t]=dp[i-1][t]+dp[i][t-coins[i]]                                                                 | Same                                                    | dp[0][0]=1                                   | t<0 → 0     | dp[n][target]                  | Forward: pick or skip coin i (unlimited).           |
+|                                      | Coin Change – Min Coins          | dp[i][t]=min coins to make t using first i coins            | dp[i][t]=min(dp[i-1][t], 1+dp[i][t-coins[i]])                                                         | Same                                                    | dp[0][0]=0                                   | t<0 → ∞     | dp[n][target]                  | Forward: pick coin i multiple times or skip.        |
+|                                      | Rod Cutting                      | dp[i][L]=max profit for rod length L using first i pieces   | dp[i][L]=max(dp[i-1][L], price[i]+dp[i][L-(i+1)])                                                     | Same                                                    | dp[0][L]=(L//1)price[0]                     | L<0 → -∞    | dp[n][N]                       | Pieces can be reused; unbounded knapsack analogy.   |
+
+| LCS / String DP                      | LCS                              | dp[i][j]=length of LCS of s1[:i] & s2[:j]                   | if s1[i-1]==s2[j-1]: dp[i][j]=1+dp[i-1][j-1] else max(dp[i-1][j],dp[i][j-1])                          | Same                                                    | dp[0][j]=0, dp[i][0]=0                       | N/A           | dp[n][m]                       | Forward: include match or skip.                     |
+|                                      | Edit Distance                    | dp[i][j]=min ops to convert s1[:i] → s2[:j]                 | if s1[i-1]==s2[j-1]: dp[i][j]=dp[i-1][j-1] else 1+min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1])             | Same                                                    | dp[i][0]=i, dp[0][j]=j                       | N/A           | dp[n][m]                       | Transform prefixes forward; suffixes backward.      |
+|                                      | LCS of 3 Strings                 | dp[i][j][k]=LCS length                                      | if s1[i-1]==s2[j-1]==s3[k-1]: 1+dp[i-1][j-1][k-1] else max(dp[i-1][j][k],dp[i][j-1][k],dp[i][j][k-1]) | Same                                                    | dp[0][..][..]=dp[..][0][..]=dp[..][..][0]=0  | N/A           | dp[n][m][o]                    | Forward: include match or skip char.                |
+
+| LIS / Sequence DP                    | LIS                              | dp[i]=length of LIS ending at i                             | dp[i]=1+max(dp[j] for j<i if arr[j]<arr[i])                                                           | dp[i]=1+max(dp[j] for j>i if arr[j]>arr[i])           | dp[i]=1                                      | N/A           | max(dp)                        | Forward: left→right. Backward: right→left.          |
+|                                      | Max Sum Increasing Subseq        | dp[i]=max sum of increasing subseq ending at i              | dp[i]=arr[i]+max(dp[j] for j<i if arr[j]<arr[i])                                                      | Same                                                    | dp[i]=arr[i]                                 | N/A           | max(dp)                        | Max sum instead of length.                          |
+|                                      | Count Number of LIS              | dp[i]=# LIS ending at i                                     | dp[i]=sum(count[j] for j<i if arr[j]<arr[i] and dp[j]+1==dp[i])                                       | Same                                                    | dp[i]=1                                      | N/A           | sum of counts                    | Count sequences ending at i.                        |
+
+| Palindrome / String DP               | LPS                              | dp[i][j]=length of longest palindromic subseq in s[i:j+1]   | if s[i]==s[j]: dp[i][j]=2+dp[i+1][j-1] else max(dp[i+1][j],dp[i][j-1])                                | Same                                                    | dp[i][i]=1                                   | i>j →0      | dp[0][n-1]                     | Expand from length 1 forward/backward.              |
+|                                      | Min Insertions to Palindrome     | dp[i][j]=min insertions to make s[i:j+1] palindrome         | if s[i]==s[j]: dp[i][j]=dp[i+1][j-1] else 1+min(dp[i+1][j],dp[i][j-1])                                | Same                                                    | dp[i][i]=0                                   | i>j→0       | dp[0][n-1]                     | Add insertions to match ends.                       |
+|                                      | Min Deletions to Palindrome      | Same as above                                               | Same                                                                                                    | dp[i][i]=0                                            | i>j→0                                        | dp[0][n-1]  | Remove chars to make palindrome. |                                                     |
+
+| Grid / Matrix DP                     | Min Path Sum                     | dp[i][j]=min sum from (0,0) to (i,j)                        | dp[i][j]=grid[i][j]+min(dp[i-1][j],dp[i][j-1])                                                        | Same from bottom-right                                  | dp[0][0]=grid[0][0]                          | i<0,j<0→∞   | dp[n-1][m-1]                   | Forward: sum top-left→bottom-right.                 |
+|                                      | Unique Paths                     | dp[i][j]=# ways to reach (i,j)                              | dp[i][j]=dp[i-1][j]+dp[i][j-1]                                                                        | Same                                                    | dp[0][0]=1                                   | N/A           | dp[n-1][m-1]                   | Count all down/right paths.                         |
+|                                      | Minimum Cost Path                | dp[i][j]=min cost to reach (i,j)                            | dp[i][j]=cost[i][j]+min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1])                                           | Same                                                    | dp[0][0]=cost[0][0]                          | N/A           | dp[n-1][m-1]                   | Consider diagonal moves.                            |
+
+| Interval / Partition DP              | Matrix Chain Multiplication      | dp[i][j]=min cost to multiply A[i..j]                       | dp[i][j]=min(dp[i][k]+dp[k+1][j]+dims[i-1]dims[k]dims[j] for k=i..j-1)                              | Same                                                    | dp[i][i]=0                                   | i>j→0       | dp[1][n]                       | Split chain at all k, forward/backward.             |
+|                                      | Palindrome Partitioning Min Cuts | dp[i][j]=min cuts to partition s[i..j]                      | if palindrome[i][j]:0 else min(1+dp[i][k]+dp[k+1][j])                                                 | Same                                                    | i=j→0                                        | i>j→0       | dp[0][n-1]                     | Split at all k to minimize cuts.                    |
+
+| Others                               | Egg Dropping                     | dp[e][f]=min trials for e eggs & f floors                   | dp[e][f]=min(1+max(dp[e-1][x-1], dp[e][f-x]) for x in 1..f)                                           | Same                                                    | dp[1][f]=f, dp[e][0]=0                       | N/A           | dp[E][F]                       | Forward: try each floor, worst-case.                |
+|                                      | Boolean Parenthesization         | dp[i][j]=# ways to evaluate True                            | Split at k, combine left/right                                                                          | Same                                                    | i>j→0, i=j→True/False                        | dp[0][n-1]    | Count ways with parentheses.     |                                                     |
+|                                      | Maximal Square                   | dp[i][j]=size of max square ending at (i,j)                 | dp[i][j]=min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1])+1 if matrix[i][j]=1                                  | Same                                                    | dp[0][j]=matrix[0][j], dp[i][0]=matrix[i][0] | N/A           | max(dp)                          | Build largest square from top-left.                 |
+
+
+
+========Edit Distance Applications==========
+| Domain         | Application                               |
+| -------------- | ----------------------------------------- |
+| NLP            | spell check, chatbots, speech recognition |
+| Search         | fuzzy search, "did you mean?"             |
+| Bioinformatics | DNA/protein sequence comparison           |
+| Security       | fraud detection, record deduplication     |
+| Dev Tools      | git diff, code comparison                 |
+| OCR            | error correction                          |
+| Data Cleaning  | matching similar names/records            |
+| Education      | plagiarism checking                       |
+
+
+===========Wildcard matching===========
+match(i, j):
+
+Case 1: both exhausted → true
+    if i < 0 and j < 0 → true
+Case 2: string exhausted but pattern left:
+    if i < 0 → pattern must be all ''
+
+Case 3: s[i] == p[j] OR p[j] == '?'
+    match(i-1, j-1)
+
+Case 4: p[j] == ''
+    '' can match:
+      - zero chars    → match(i,   j-1)
+      - one char      → match(i-1, j)
+
+Else:
+    false
+
+
+
+
+================DP Stocks=================
+1. Best Time to Buy and Sell Stock I (Only Once)
+
+Problem:
+	Array: prices[0..n-1]
+	Max one transaction (buy once, sell once)
+	Maximize profit.
+	
+2️.Best Time to Buy and Sell Stock II (Unlimited Transactions)
+Problem:
+	Can buy and sell multiple times, but cannot hold more than 1 stock at a time.
+	Maximize total profit.
+	
+3. Best Time to Buy and Sell Stock III (At Most 2 Transactions)
+Problem:
+   Max 2 transactions (buy-sell pairs)
+   
+4️.Best Time to Buy and Sell Stock IV (At Most k Transactions)
+Problem:
+	Max k transactions
+	
+5️.Stock with Cooldown (Unlimited Transactions, 1-Day Cooldown)
+Problem:
+	After selling, cannot buy the next day
+	
+6. Stock with Transaction Fee (Unlimited Transactions)
+Problem:
+	Each transaction has a fee
+	
+
+| Problem                                	| Transactions   | Base Cases                                                          	| Forward DP Recurrence                                                                                                            	|
+| -------------------------------------- 	| -------------- | ------------------------------------------------------------------- 	| -------------------------------------------------------------------------------------------------------------------------------- 	|
+| Stock I (Buy & Sell Only Once)     		| 1              | min_price = prices[0], max_profit = 0                           		| dp[i] = max(dp[i-1], prices[i]-min_price)                                                                                      	|
+| Stock II (Unlimited Transactions)  		| ∞              | dp[0][0] = 0, dp[0][1] = -prices[0]                             		| dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])<br>dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i])                     		|
+| Stock III (At Most 2 Transactions) 		| ≤2             | dp[0][k][0] = 0, dp[0][k][1] = -prices[0]<br>dp[i][0][1] = -∞ 		| dp[i][k][0] = max(dp[i-1][k][0], dp[i-1][k][1] + prices[i])<br>dp[i][k][1] = max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i]) 		|
+| Stock IV (At Most k Transactions)  		| ≤k             | same as Stock III                                                   	| same as Stock III, generalized to k transactions                                                                                 	|
+| Stock with Cooldown                		| ∞ + cooldown=1 | dp[0][0] = 0, dp[0][1] = -prices[0], dp[-1][0] = 0            		| dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])<br>dp[i][1] = max(dp[i-1][1], dp[i-2][0] - prices[i])                     		|
+| Stock with Transaction Fee         		| ∞ + fee=f      | dp[0][0] = 0, dp[0][1] = -prices[0]                             		| dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i] - fee)<br>dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i])              	 	|
+
+
+
+
+=======Stocks 2============
+
+Basecase :
+if i == n:
+    return 0
+	
+Recurrance :
+if (buy == 1):
+    take     = -a[i] + stocks(i+1, 0)
+    not_take = 0     + stocks(i+1, 1)
+    return max(take, not_take)
+
+else:
+    take     = a[i] + stocks(i+1, 1)
+    not_take = 0    + stocks(i+1, 0)
+    return max(take, not_take)
+	
+Tabulation :
+
+dp[n][0] = dp[n][1] = 0
+
+for i from n-1 down to 0:
+    dp[i][1] = max(-a[i] + dp[i+1][0],
+                   0     + dp[i+1][1])
+
+    dp[i][0] = max(a[i] + dp[i+1][1],
+                   0    + dp[i+1][0])
+
+
+=====STOCK PROBLEM 3/4 — At Most 2/K Transactions==========
+State
+	stocks(i, buy, cap)	:	cap = remaining number of sells allowed (2 → 1 → 0)
+
+Base Case:
+	if i == n:
+		return 0
+	if cap == 0:
+		return 0
+Recurrance : 		
+if (buy == 1):
+    take     = -a[i] + stocks(i+1, 0, cap)
+    not_take = 0     + stocks(i+1, 1, cap)
+    return max(take, not_take)
+
+else:
+    take     = a[i] + stocks(i+1, 1, cap-1)   // used 1 sell
+    not_take = 0    + stocks(i+1, 0, cap)
+    return max(take, not_take)
+
+Tabulation:
+	dp[n][buy][cap] = 0
+	dp[i][buy][0]   = 0
+	
+for i = n-1 → 0:
+  for cap = 1 → 2: [ for cap = 1 → k: when K transactions allowed] 
+    dp[i][1][cap] =
+        max(-a[i] + dp[i+1][0][cap],
+             0     + dp[i+1][1][cap])
+
+    dp[i][0][cap] =
+        max(a[i] + dp[i+1][1][cap-1],
+             0    + dp[i+1][0][cap])
+
+
+
+======STOCK PROBLEM 5 — With Cooldown=====
+Basecase:
+	if i >= n:
+    return 0
+
+if (buy == 1):
+    take     = -a[i] + stocks(i+1, 0)
+    not_take = 0     + stocks(i+1, 1)
+    return max(take, not_take)
+
+else:
+    take     = a[i] + stocks(i+2, 1)   // cooldown 1 day
+    not_take = 0    + stocks(i+1, 0)
+    return max(take, not_take)
+
+
+=========6 Stocks with Transaction Fee=====
+if i == n: return 0
+
+if (buy == 1):
+    take     = -a[i] + stocks(i+1, 0)
+    not_take = 0     + stocks(i+1, 1)
+    return max(take, not_take)
+
+else:
+    take     = a[i] - fee + stocks(i+1, 1)
+    not_take = 0           + stocks(i+1, 0)
+    return max(take, not_take)
+
+
+
+=============Longest Increasing Subsequence========
+Given an array arr[], find the length of the longest subsequence such that:
+arr[i1] < arr[i2] < arr[i3] < ... < arr[ik]
+
+lis(i, prev) [previous included index in sequence]
+
+if i == n:
+    return 0     # no more elements left
+
+if arr[i] > arr[prev] OR prev == -1:
+    take = 1 + lis(i+1, i)
+else:
+    take = -inf   # invalid
+not_take = lis(i+1, prev)
+
+return max(take, not_take)
+
+lis(i, prev) : LIS of an  array starting at Inedx i and ending at index n-1 
+
+answer = LIS(0,-1)
+
+
+
+=====Backward Recurrence (from index n-1 → 0)======
+
+We define:
+
+lis(i, next)
+
+
+i = current index we are considering
+
+next = index of next element in LIS (or n if none chosen yet)
+
+Goal: length of LIS ending at i or later, looking backward.
+
+
+Partition DP 
+=======MCM DP and Applications================
+| Problem                                | Transactions / Constraint | Base Cases                                                  | Forward DP Recurrence                                                                                                        |
+| -------------------------------------- | ------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Matrix Chain Multiplication (MCM)**  | n matrices                | dp[i][i] = 0                                                | dp[i][j] = min(dp[i][k] + dp[k+1][j] + p[i-1]*p[k]*p[j]) for k in [i..j-1]                                                   |
+| **Boolean Parenthesization**           | n matrices (True/False)   | dp[i][i][True/False] = 1 if symbol[i] matches               | dp[i][j][True] = Σ(dp[i][k][LT]*dp[k+1][j][RT]) where LT/RT are combinations leading to True; similarly for False            |
+| **Palindrome Partitioning (Min Cuts)** | n characters              | dp[i][i] = 0                                                | dp[i][j] = min(dp[i][k] + dp[k+1][j] + 1) if s[i..j] is not palindrome, k in [i..j-1]                                        |
+| **Burst Balloons**                     | n balloons                | dp[i][i] = nums[i-1]*nums[i]*nums[i+1]                      | dp[i][j] = max(dp[i][k-1] + dp[k+1][j] + nums[i-1]*nums[k]*nums[j+1]) for k in [i..j]                                        |
+| **Egg Dropping Problem**               | e eggs, f floors          | dp[1][f] = f, dp[e][0] = 0                                  | dp[e][f] = min(1 + max(dp[e-1][k-1], dp[e][f-k])) for k in [1..f]                                                            |
+| **Optimal BST**                        | n keys                    | dp[i][i] = freq[i]                                          | dp[i][j] = min(dp[i][k-1] + dp[k+1][j] + sum(freq[i..j])) for k in [i..j]                                                    |
+
+
+mXn , nXp matrices number of operations to multiply is 
+| Operation                  | Count               |
+| -------------------------- | ------------------- |
+| **Scalar Multiplications** | **m × n × p**       |
+| **Scalar Additions**       | **m × p × (n − 1)** |
+
+FULL RECURRANCE SUMMARY (Forward + Backward)
+| Style        | Partition k range | Subproblems          | Multiply term                |
+| ------------ | ----------------- | -------------------- | ---------------------------- |
+| **Forward**  | `i ≤ k < j`       | dp[i][k], dp[k+1][j] | arr[i−1] * arr[k] * arr[j]   |
+| **Backward** | `i < k ≤ j`       | dp[i][k−1], dp[k][j] | arr[i−1] * arr[k−1] * arr[j] |
+
+
+
+==============================Palindrome Partitioning / Frone Partitioning ==========================
+✅ Summary of Front Partitioning
+| Problem                    | Partitioning Approach        | Base Case                     | Recursion                   |
+| -------------------------- | ---------------------------- | ----------------------------- | --------------------------- |
+| Palindrome Partitioning    | substrings from i to end     | i == len(s) → store path      | Recurse from end+1          |
+| Word Break / Word Break II | substrings from i to end     | i == len(s) → store sentence  | Recurse from end+1          |
+| Restore IP Addresses       | substrings of len 1-3        | 4 segments formed & i==len(s) | Recurse from i+len(segment) |
+| Decode Ways                | substrings of len 1-2 digits | i == len(s) → valid decoding  | Recurse from i+len(segment) |
+| Partition DP Problems      | any valid cut from i to end  | i == end → compute property   | Recurse on remainder        |
+
+
+| Approach / Method                              | Precompute Palindrome? 	| Time Complexity | Space Complexity              | Notes                                                         |
+| ---------------------------------------------- | ----------------------  | --------------- | ----------------------------- | ------------------------------------------------------------- |
+| **Memoization (Top-Down)**                     | ✅ Yes                  | O(n²)           | O(n²) for pal table + O(n) DP | Fast, palindrome check is O(1) using table                    |
+| **Memoization (Top-Down)**                     | ❌ No                   | O(n³)           | O(n) DP                       | Slower, palindrome check done on the fly (O(n) per substring) |
+| **Tabulation (1-D / Simple i,j loops)**        | ✅ Yes                  | O(n²)           | O(n²) for pal table + O(n) DP | Simple 1-D dp array + palindrome table lookup                 |
+| **Tabulation (1-D / Simple i,j loops)**        | ❌ No                   | O(n³)           | O(n) DP                       | 1-D dp array, palindrome checked on the fly                   |
+| **Tabulation (2-D / Diagonal / Length-based)** | ✅ Yes                  | O(n²)           | O(n²) DP + O(n²) pal table    | Full 2-D DP table for intervals, fastest when n is moderate   |
+| **Tabulation (2-D / Diagonal / Length-based)** | ❌ No                   | O(n³)           | O(n²) DP                      | 2-D DP table, palindrome checked on the fly                   |
+

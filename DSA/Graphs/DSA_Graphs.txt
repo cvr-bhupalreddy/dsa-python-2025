@@ -1,0 +1,149 @@
+===============Striver Graph Algorithms=============
+1. Basics of Graphs
+
+A graph 
+𝐺=(𝑉,𝐸)
+G=(V,E) consists of:
+
+V: Set of vertices (nodes)
+E: Set of edges (connections between nodes)
+
+Types of graphs:
+
+Directed vs. Undirected
+	Directed: Edges have a direction (A → B)
+	Undirected: Edges have no direction (A — B)
+
+Weighted vs. Unweighted
+	Weighted: Edges carry a weight/cost
+	Unweighted: All edges are equal
+
+Special Graphs
+	Complete graph: Every node connected to every other node
+	Bipartite graph: Nodes divided into two sets, edges only between sets
+	Tree: A connected acyclic graph
+	DAG (Directed Acyclic Graph): Directed graph without cycles
+
+Graph representation:
+	Adjacency matrix: 2D array, O(V^2) space
+	Adjacency list: List of neighbors for each node, O(V + E) space
+	Edge list: List of all edges
+
+
+======Graph Traversals=========
+2. Traversal Algorithms
+
+2.1 Depth-First Search (DFS)
+	Explores as far as possible along a branch before backtracking
+	Uses stack (recursion or explicit)
+
+Applications:
+
+	Detect cycles
+	Topological sort
+	Connected components
+	Path finding
+	Strongly Connected Components 
+	Bridges and Articulation Points 
+
+2.2 Breadth-First Search (BFS)
+	Explores all neighbors before moving deeper
+	Uses queue
+
+Applications:
+	Shortest path in unweighted graphs
+	Level order traversal
+	Bipartite graph check
+	Alien Dictionaries 
+	Wordladders 
+
+
+==========Shortest Path Algorithms=======
+1.Dijkstra (will not work for negative edge weights )
+2.Bellman Ford ( will work with negative weight edges , but not negative weight cycles , but can detect it )
+3.Floyd Warshall ( All pair shortest paths) 
+
+3.1 Dijkstra’s Algorithm
+	Finds shortest path from a single source in a weighted graph with non-negative edges
+	Uses priority queue / min-heap
+	Time complexity: O((V+E) log V)
+	
+3.2 Bellman-Ford Algorithm
+	Single-source shortest path for graphs with negative weights
+	Can detect negative cycles
+	Time complexity: O(V * E)
+	
+3.3 Floyd-Warshall Algorithm
+	All-pairs shortest path
+	Works with negative weights (but no negative cycles)
+	Dynamic programming approach
+	Time complexity: O(V^3)
+
+
+========Minimal Spanning Trees=======
+Goal: Connect all vertices with minimum total edge weight
+
+Algorithms:
+
+Kruskal’s Algorithm
+	Sort edges by weight, add edges without forming cycles
+	Union-Find for cycle detection
+
+Prim’s Algorithm
+	Start from any node, grow MST by adding smallest edge connecting new node
+
+Applications:
+	Network design (telecom, electricity)
+	Road, pipeline planning
+	
+========Network Flow Algorithms=========
+Network Flow Algorithms
+
+Max Flow / Min Cut problem
+
+Algorithms:
+	Ford-Fulkerson
+	Edmonds-Karp (BFS-based)
+	Dinic’s Algorithm
+
+Applications:
+	Traffic networks
+	Matching problems
+	Image segmentation
+	
+=======Topological Sorting=====
+Ordering of DAG vertices such that for every edge u → v, u comes before v
+
+Algorithms:
+	DFS-based
+	Kahn’s algorithm (BFS-based)
+
+Applications:
+	Task scheduling
+	Course prerequisite planning
+	Build systems (dependencies)
+	
+======Strongly Connected Components (SCC)=====
+Maximal subsets where every node reachable from every other node
+
+Algorithms:
+	Kosaraju’s Algorithm
+	Tarjan’s Algorithm
+
+Applications:
+	Social network analysis
+	Deadlock detection
+	Web page clustering
+	
+=======Matching and Coloring======
+Matching: Pairing nodes without overlap
+Maximum matching: bipartite (Hungarian algorithm)
+Graph coloring: Assign colors to vertices so no adjacent vertices share a color
+
+Applications:
+	Scheduling
+	register allocation in compilers
+	
+======Bridges and Articulatiopoints======
+Tarjan’s Bridge & Articulation Points:
+	Identify critical connections in networks

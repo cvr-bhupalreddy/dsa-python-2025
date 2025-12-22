@@ -1,0 +1,392 @@
+===============Striver Graph Algorithms=============
+1. Basics of Graphs
+
+A graph 
+𝐺=(𝑉,𝐸)
+G=(V,E) consists of:
+
+V: Set of vertices (nodes)
+E: Set of edges (connections between nodes)
+
+Types of graphs:
+
+Directed vs. Undirected
+	Directed: Edges have a direction (A → B)
+	Undirected: Edges have no direction (A — B)
+
+Weighted vs. Unweighted
+	Weighted: Edges carry a weight/cost
+	Unweighted: All edges are equal
+
+Special Graphs
+	Complete graph: Every node connected to every other node
+	Bipartite graph: Nodes divided into two sets, edges only between sets
+	Tree: A connected acyclic graph
+	DAG (Directed Acyclic Graph): Directed graph without cycles
+
+Graph representation:
+	Adjacency matrix: 2D array, O(V^2) space
+	Adjacency list: List of neighbors for each node, O(V + E) space
+	Edge list: List of all edges
+
+
+======Graph Traversals=========
+2. Traversal Algorithms
+
+2.1 Depth-First Search (DFS)
+	Explores as far as possible along a branch before backtracking
+	Uses stack (recursion or explicit)
+
+Applications:
+
+	Detect cycles
+	Topological sort
+	Connected components
+	Path finding
+	Strongly Connected Components 
+	Bridges and Articulation Points 
+
+2.2 Breadth-First Search (BFS)
+	Explores all neighbors before moving deeper
+	Uses queue
+
+Applications:
+	Shortest path in unweighted graphs
+	Level order traversal
+	Bipartite graph check
+	Alien Dictionaries 
+	Wordladders 
+
+
+==========Shortest Path Algorithms=======
+1.Dijkstra (will not work for negative edge weights )
+2.Bellman Ford ( will work with negative weight edges , but not negative weight cycles , but can detect it )
+3.Floyd Warshall ( All pair shortest paths) 
+
+3.1 Dijkstra’s Algorithm
+	Finds shortest path from a single source in a weighted graph with non-negative edges
+	Uses priority queue / min-heap
+	Time complexity: O((V+E) log V)
+	
+3.2 Bellman-Ford Algorithm
+	Single-source shortest path for graphs with negative weights
+	Can detect negative cycles
+	Time complexity: O(V * E)
+	
+3.3 Floyd-Warshall Algorithm
+	All-pairs shortest path
+	Works with negative weights (but no negative cycles)
+	Dynamic programming approach
+	Time complexity: O(V^3)
+
+
+========Minimal Spanning Trees=======
+Goal: Connect all vertices with minimum total edge weight
+
+Algorithms:
+
+Kruskal’s Algorithm
+	Sort edges by weight, add edges without forming cycles
+	Union-Find for cycle detection
+
+Prim’s Algorithm
+	Start from any node, grow MST by adding smallest edge connecting new node
+
+Applications:
+	Network design (telecom, electricity)
+	Road, pipeline planning
+	
+========Network Flow Algorithms=========
+Network Flow Algorithms
+
+Max Flow / Min Cut problem
+
+Algorithms:
+	Ford-Fulkerson
+	Edmonds-Karp (BFS-based)
+	Dinic’s Algorithm
+
+Applications:
+	Traffic networks
+	Matching problems
+	Image segmentation
+	
+=======Topological Sorting=====
+Ordering of DAG vertices such that for every edge u → v, u comes before v
+
+Algorithms:
+	DFS-based
+	Kahn’s algorithm (BFS-based)
+
+Applications:
+	Task scheduling
+	Course prerequisite planning
+	Build systems (dependencies)
+	
+======Strongly Connected Components (SCC)=====
+Maximal subsets where every node reachable from every other node
+
+Algorithms:
+	Kosaraju’s Algorithm
+	Tarjan’s Algorithm
+
+Applications:
+	Social network analysis
+	Deadlock detection
+	Web page clustering
+	
+=======Matching and Coloring======
+Matching: Pairing nodes without overlap
+Maximum matching: bipartite (Hungarian algorithm)
+Graph coloring: Assign colors to vertices so no adjacent vertices share a color
+
+Applications:
+	Scheduling
+	register allocation in compilers
+	
+======Bridges and Articulatiopoints======
+Tarjan’s Bridge & Articulation Points:
+	Identify critical connections in networks
+	
+	
+
+
+SECTION 1: GRAPH PATTERNS TABLE (PATTERN + WHEN + QUESTIONS)
+| Pattern Name         | When to Use                             | Most Popular Problems                       |
+| -------------------- | --------------------------------------- | ------------------------------------------- |
+| BFS Traversal        | Shortest path, level by level traversal | Shortest path, Word Ladder, Rotting Oranges |
+| DFS Traversal        | Explore fully, components, backtracking | Number of Islands, Flood Fill               |
+| Connected Components | Count independent groups                | Provinces, Friend Circles                   |
+| Cycle Detection      | Detect loops in graph                   | Course Schedule, Redundant Connection       |
+| Topological Sort     | Ordering with dependencies              | Course Schedule II, Alien Dictionary        |
+| Unweighted Shortest  | Shortest path without weights           | Binary Matrix Shortest Path                 |
+| Weighted Shortest    | Edge weights present                    | Dijkstra, Network Delay Time                |
+| Union Find           | Dynamic connectivity                    | Accounts Merge, Graph Valid Tree            |
+| Bipartite Check      | Two group partition                     | Possible Bipartition                        |
+| Grid Graph           | Matrix traversal                        | Islands, Surrounded Regions                 |
+| Multi Source BFS     | Multiple start points                   | Rotting Oranges, Walls and Gates            |
+| State Space Graph    | State transitions                       | Open the Lock, Sliding Puzzle               |
+| MST                  | Minimum cost connection                 | Min Cost to Connect Points                  |
+| SCC                  | Mutual reachability                     | Strongly Connected Components               |
+
+
+
+==========Topological Sorting=======
+PROBLEM DEFINITION
+	Topological Sorting is a linear ordering of vertices of a graph such that:
+		For every directed edge U -> V, U appears before V in the ordering.
+		
+APPLICABLE GRAPH TYPE
+	Topological sorting is applicable ONLY for:
+		Directed Graph
+		Acyclic Graph (DAG)
+
+	If the graph has a cycle:
+		Topological order DOES NOT exist
+		
+WHERE IT IS USED
+	Course prerequisite problems
+	Task scheduling
+	Build systems (compilation order)
+	Dependency resolution
+	Package managers
+	Job scheduling
+	
+-----Khan's Algorithm [In Degree ]---------
+CORE IDEA
+	Nodes with no incoming edges (indegree = 0) can be placed first.
+
+Repeatedly:
+	Remove nodes with indegree 0
+	Reduce indegree of their neighbors
+	Add new indegree 0 nodes to queue
+
+If all nodes are processed -> DAG
+If some nodes remain -> Cycle exists
+
+-------DFS (Finish Times)----
+ALGORITHM STEPS
+
+Maintain visited set
+Maintain recursion stack (for cycle detection)
+
+For each unvisited node:
+	Perform DFS
+
+In DFS:
+	Mark node as visited and add to recursion stack
+	For each neighbor:
+		if neighbor in recursion stack -> cycle
+		if not visited -> DFS(neighbor)
+	Remove node from recursion stack
+	Append node to result list
+	Reverse result list to get topological order
+
+
+===========Strongly Connected Components [Only Directed Graphs]=============
+In a directed graph, a Strongly Connected Component (SCC) is a group of nodes such that:
+	Every node is reachable from every other node in the group
+	Path exists in both directions between any two nodes
+	
+Kosaraju:
+	Two DFS passes
+	Needs reversed graph
+	Easier to understand
+
+Tarjan:
+	Single DFS
+	No graph reversal
+	More efficient in practice
+	Slightly complex
+----Kosaraju Algorithm----
+Steps:
+	First DFS to compute finish order
+	Reverse graph edges
+	DFS in finish order to extract SCCs
+	
+ALGORITHM STEPS
+
+Perform DFS on original graph
+	Push nodes onto stack after finishing DFS
+Reverse the graph (transpose)
+Pop nodes from stack
+	For each unvisited node, perform DFS on reversed graph
+	Each DFS gives one SCC
+	
+
+--------Tarjan Algorithm-------
+Use DFS timestamps and low-link values to detect SCCs in one traversal.
+
+If:
+	low[u] == disc[u]
+	Then u is the root of an SCC.
+
+disc[u] : Discovery time of node u
+low[u] : Lowest discovery time reachable from u
+stack : Tracks current DFS path
+on_stack : Marks nodes in current stack
+
+
+WHY IT WORKS
+	low-link captures back edges
+	SCC root is detected when node cannot reach earlier node
+	Stack contains exactly SCC nodes at that moment
+	
+ALGORITHM STEPS
+Initialize time counter
+
+DFS each node:
+	Assign discovery time and low-link
+	Push node onto stack
+
+For each neighbor:
+	If not visited -> DFS
+	If on stack -> update low-link
+
+If low[u] == disc[u]:
+	Pop nodes until u is popped
+	All popped nodes form one SCC
+	
+	
+=============Articulation Point and Bridge [Only for Undirected Graphs]==================
+PROBLEM DEFINITIONS
+
+ARTICULATION POINT:
+	A vertex whose removal increases the number of connected components in a graph.
+
+BRIDGE:
+	An edge whose removal increases the number of connected components in a graph.
+	
+	
+ARTICULATION POINT CONDITIONS
+	CASE 1: ROOT NODE
+		Root has 2 or more children in DFS tree
+
+	CASE 2: NON-ROOT NODE
+		There exists a child v such that:
+		low[v] >= disc[u]
+		
+BRIDGE CONDITION
+	Edge (u, v) is a bridge if:	low[v] > disc[u]
+	
+
+
+===========Shortest Path Algorithm=============
+Given a weighted graph and a source node, find the shortest distance from the source to every other node.
+
+APPLICABLE GRAPH TYPES
+
+Dijkstra:
+	Directed or Undirected graph
+	Non-negative edge weights ONLY
+
+Bellman Ford:
+	Directed or Undirected graph
+	Can handle negative edge weights
+	Can detect negative weight cycles
+	
+	
+------Dijkstra----------
+Initialize distance array with infinity
+Set source distance to 0
+Use min heap (priority queue)
+
+While heap not empty:
+	Pop node with smallest distance
+	For each neighbor:
+		relax edge if shorter path found
+		
+----------Bellman Ford-----
+ALGORITHM STEPS
+
+Initialize distances
+Repeat V-1 times:
+	For each edge (u, v, w):
+		relax distance
+
+Repeat once more:
+	If relaxation still possible -> negative cycle exists
+	
+	
+=============Minimum Spanning Tree [Undirected Graphs Only]==============
+
+MST :
+PROBLEM DEFINITION
+
+Given a connected, undirected, weighted graph,find a subset of edges such that:
+	All vertices are connected
+	Total edge weight is minimum
+	No cycles are formed
+
+This subset is called a Minimum Spanning Tree (MST).
+
+------Prims Algorithm-------
+ALGORITHM STEPS
+
+	Start from any node
+	Mark it as visited
+	Push all its edges into a min heap
+
+	While heap not empty:
+		Pick minimum weight edge
+		If destination is not visited:
+			add edge to MST
+			mark node visited
+			push its edges into heap
+
+------Krushkal Algorithm-----
+ALGORITHM STEPS
+
+	Sort all edges by weight
+	Initialize Union Find
+	For each edge:
+		If nodes are in different sets:
+			union them
+			add edge weight to MST
+			
+------Union Find--------
+CORE IDEA
+	Each node points to a parent
+	Root node represents the set
+	Path compression flattens tree during find
+	Union by rank keeps tree shallow

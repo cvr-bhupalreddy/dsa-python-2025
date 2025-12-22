@@ -1,0 +1,422 @@
+=========================DSA Trees===========================
+PATTERN                                     | POPULAR QUESTIONS
+--------------------------------------------------------------------------------------------------------------
+1. DFS Traversals (Pre/In/Post)             | - Preorder Traversal
+                                            | - Inorder Traversal
+                                            | - Postorder Traversal
+                                            | - Validate BST
+                                            | - Maximum Depth of Tree
+                                            | - Symmetric Tree
+                                            | - Invert Binary Tree
+                                            | - Subtree of Another Tree
+--------------------------------------------------------------------------------------------------------------
+2. BFS Level Order Traversal                | - Level Order Traversal
+                                            | - Zigzag Level Order
+                                            | - Right Side View
+                                            | - Left Side View
+                                            | - Average of Levels
+                                            | - Width of Binary Tree
+                                            | - Minimum Depth of Binary Tree
+--------------------------------------------------------------------------------------------------------------
+3. DFS + Backtracking (Path Problems)       | - Path Sum I
+                                            | - Path Sum II
+                                            | - Root-to-Leaf Paths
+                                            | - Good Nodes in Tree
+                                            | - Sum of Left Leaves
+                                            | - Pseudo-Palindromic Paths
+--------------------------------------------------------------------------------------------------------------
+4. Postorder Tree DP (Return values)        | - Lowest Common Ancestor
+                                            | - Balanced Binary Tree
+                                            | - Diameter of Binary Tree
+                                            | - Binary Tree Maximum Path Sum
+                                            | - House Robber III
+                                            | - Count Good Nodes
+--------------------------------------------------------------------------------------------------------------
+5. LCA Pattern                              | - LCA of Binary Tree
+                                            | - LCA of BST
+                                            | - Distance Between Two Nodes
+                                            | - Kth Ancestor (Binary Lifting)
+--------------------------------------------------------------------------------------------------------------
+6. BST Pattern                              | - Search in BST
+                                            | - Insert into BST
+                                            | - Delete Node in BST
+                                            | - Kth Smallest Element
+                                            | - Validate BST
+                                            | - Convert Sorted Array to BST
+                                            | - Recover BST
+--------------------------------------------------------------------------------------------------------------
+7. Tree Flattening / Transformation         | - Flatten Binary Tree to Linked List
+                                            | - Convert BST to Greater Sum Tree
+                                            | - Convert BST to Doubly Linked List
+                                            | - Serialize & Deserialize Tree
+--------------------------------------------------------------------------------------------------------------
+8. Tree Construction                        | - Build Tree from Preorder + Inorder
+                                            | - Build Tree from Inorder + Postorder
+                                            | - Construct BST from Preorder
+                                            | - Build Tree from Level Order
+--------------------------------------------------------------------------------------------------------------
+9. Parent Pointer / K-Distance              | - Nodes at Distance K
+                                            | - Burning Tree Problem
+                                            | - LCA with Parent Pointers
+--------------------------------------------------------------------------------------------------------------
+10. DFS + Memoization (Tree DP)             | - House Robber III
+                                            | - Sum of Distances in Tree
+                                            | - Number of Unique BSTs (Catalan)
+--------------------------------------------------------------------------------------------------------------
+11. Morris Traversal (O(1) Space)           | - Morris Inorder
+                                            | - Morris Preorder
+                                            | - Recover BST (Optimized)
+--------------------------------------------------------------------------------------------------------------
+
+=======Different Views=====
+
+
+PROBLEM / VIEW              | BEST APPROACH         | VERY HIGH-LEVEL IDEA
+----------------------------------------------------------------------------------------------------
+Level Order Traversal       | BFS (Queue)           | Traverse tree level by level using a queue.
+                            |                       | Process all nodes of one level before next.
+----------------------------------------------------------------------------------------------------
+Vertical Order Traversal    | BFS + Column Index    | Assign each node a vertical column index.
+                            |                       | Left child = col - 1, right child = col + 1.
+                            |                       | Group nodes by column and output left to right.
+----------------------------------------------------------------------------------------------------
+Left View                   | BFS (Level Order)     | For each level, the first node seen is visible
+                            | or DFS (Preorder)     | from the left side.
+                            |                       | Keep first node of every depth.
+----------------------------------------------------------------------------------------------------
+Right View                  | BFS (Level Order)     | For each level, the last node seen is visible
+                            | or DFS (Reverse Pre)  | from the right side.
+                            |                       | Keep last node of every depth.
+----------------------------------------------------------------------------------------------------
+Top View                    | BFS + Horizontal Dist | For each horizontal distance, pick the FIRST
+                            |                       | node encountered during traversal.
+                            |                       | BFS ensures topmost node is processed first.
+----------------------------------------------------------------------------------------------------
+Bottom View                 | BFS + Horizontal Dist | For each horizontal distance, pick the LAST
+                            |                       | node encountered.
+                            |                       | Override value as deeper nodes are visited.
+----------------------------------------------------------------------------------------------------
+
+VERTICAL ORDER TRAVERSAL (CORE IDEA)
+------------------------------------------------------------
+- Use BFS or DFS but track (column, row) for each node.
+- Column decreases for left child, increases for right child.
+- Store nodes as: map[col].append((row, value))
+- After traversal, sort columns from min to max.
+- For each column, sort by row, then by value (if needed).
+- Output values column by column.
+------------------------------------------------------------
+
+
+
+
+
+LEFT VIEW OF BINARY TREE (CORE IDEA)
+------------------------------------------------------------
+- Use BFS level order.
+- For each level, take the FIRST node in that level.
+OR
+- DFS: For each depth, if first time visiting this depth -> add node.
+- Prioritize left child before right child.
+------------------------------------------------------------
+
+
+RIGHT VIEW OF BINARY TREE (CORE IDEA)
+------------------------------------------------------------
+- Use BFS level order.
+- For each level, take the LAST node in that level.
+OR
+- DFS: For each depth, if first time visiting depth from right side -> add node.
+- Prioritize right child before left child.
+------------------------------------------------------------
+
+
+TOP VIEW OF BINARY TREE (CORE IDEA)
+------------------------------------------------------------
+- Use BFS with horizontal distance (HD).
+- HD = 0 for root, -1 for left, +1 for right.
+- For each HD, store FIRST node seen.
+- Use a map<HD, value> but only set value if HD not seen before.
+- Print HD from min to max.
+------------------------------------------------------------
+
+
+BOTTOM VIEW OF BINARY TREE (CORE IDEA)
+------------------------------------------------------------
+- Use BFS with horizontal distance (HD).
+- HD = 0 for root, -1 for left, +1 for right.
+- For each HD, store LAST node seen at that HD.
+- Simply override map<HD, value> for every node visited.
+- Print HD from min to max.
+------------------------------------------------------------
+
+
+
+===================Binary Tree Templates======================
+PATTERN 1: DFS TRAVERSALS (PRE / IN / POST)
+------------------------------------------------------------
+Template (Recursive):
+function dfs(node):
+    if node is null:
+        return
+
+    # preorder logic (node)
+    dfs(node.left)
+    # inorder logic (node)
+    dfs(node.right)
+    # postorder logic (node)
+
+Template (Iterative - using stack):
+stack = []
+curr = root
+while curr != null or stack not empty:
+    # inorder
+    while curr:
+        stack.push(curr)
+        curr = curr.left
+    curr = stack.pop()
+    # process curr (inorder)
+    curr = curr.right
+------------------------------------------------------------
+
+
+PATTERN 2: BFS LEVEL ORDER
+------------------------------------------------------------
+Template:
+queue = [root]
+
+while queue not empty:
+    size = len(queue)
+    for i in 1..size:
+        node = queue.pop_front()
+        # process node
+        if node.left: queue.push(node.left)
+        if node.right: queue.push(node.right)
+------------------------------------------------------------
+
+
+PATTERN 3: DFS + BACKTRACKING (PATH PROBLEMS)
+------------------------------------------------------------
+Template:
+path = []
+result = []
+
+function dfs(node):
+    if node is null:
+        return
+
+    path.append(node.val)
+
+    if node is leaf:
+        # check condition on path
+        result.append(copy(path))
+
+    dfs(node.left)
+    dfs(node.right)
+
+    path.pop()    # backtrack
+------------------------------------------------------------
+
+
+PATTERN 4: POSTORDER TREE DP (RETURN VALUES UPWARD)
+------------------------------------------------------------
+Template:
+function dfs(node):
+    if node is null:
+        return BASE_VALUE
+
+    left = dfs(node.left)
+    right = dfs(node.right)
+
+    # Combine left + right + node.val
+    return RESULT_FOR_PARENT
+------------------------------------------------------------
+This template solves:
+- LCA
+- Diameter
+- Balanced tree
+- Max path sum
+- Any subtree computation
+------------------------------------------------------------
+
+
+PATTERN 5: LCA (DIVIDE & CONQUER)
+------------------------------------------------------------
+Template:
+function lca(node, p, q):
+    if node is null or node == p or node == q:
+        return node
+
+    left = lca(node.left, p, q)
+    right = lca(node.right, p, q)
+
+    if left != null and right != null:
+        return node
+    return left if left != null else right
+------------------------------------------------------------
+
+
+PATTERN 6: BST OPERATIONS (USES ORDERED PROPERTY)
+------------------------------------------------------------
+Search:
+function search(node, val):
+    if node == null:
+        return null
+    if val == node.val:
+        return node
+    if val < node.val:
+        return search(node.left, val)
+    return search(node.right, val)
+
+Insert:
+function insert(node, val):
+    if node == null:
+        return new Node(val)
+    if val < node.val:
+        node.left = insert(node.left, val)
+    else:
+        node.right = insert(node.right, val)
+    return node
+
+Inorder for Kth smallest:
+function inorder(node):
+    if node is null: return
+    inorder(node.left)
+    # process
+    inorder(node.right)
+------------------------------------------------------------
+
+
+PATTERN 7: TREE FLATTENING (PREORDER)
+------------------------------------------------------------
+Template:
+function flatten(node):
+    if node is null:
+        return null
+
+    flatten(node.left)
+    flatten(node.right)
+
+    temp = node.right
+    node.right = node.left
+    node.left = null
+
+    curr = node
+    while curr.right:
+        curr = curr.right
+    curr.right = temp
+------------------------------------------------------------
+
+
+PATTERN 8: BUILD TREE FROM TRAVERSALS
+------------------------------------------------------------
+Template (Preorder + Inorder):
+function build(preorder, inorder):
+    if arrays empty:
+        return null
+
+    rootVal = preorder.pop_front()
+    root = new Node(rootVal)
+
+    mid = inorder_index[rootVal]
+
+    root.left = build(preorder, inorder[0:mid])
+    root.right = build(preorder, inorder[mid+1:])
+    return root
+------------------------------------------------------------
+
+
+PATTERN 9: PARENT POINTER / K-DISTANCE
+------------------------------------------------------------
+Template (Build parent map):
+parent = {}
+queue = [root]
+parent[root] = null
+
+while queue not empty:
+    node = queue.pop_front()
+    if node.left:
+        parent[node.left] = node
+        queue.push(node.left)
+    if node.right:
+        parent[node.right] = node
+        queue.push(node.right)
+
+Template (BFS from target):
+queue = [target]
+visited = set([target])
+dist = 0
+
+while queue not empty:
+    if dist == K: break
+    for each node in queue:
+        push neighbors (left, right, parent[node])
+        mark visited
+    dist += 1
+------------------------------------------------------------
+
+
+PATTERN 10: DFS + MEMOIZATION (TREE DP)
+------------------------------------------------------------
+Template:
+memo = {}
+
+function dfs(node):
+    if node is null:
+        return BASE_VALUE
+
+    if node in memo:
+        return memo[node]
+
+    left = dfs(node.left)
+    right = dfs(node.right)
+
+    memo[node] = combine(left, right, node.val)
+    return memo[node]
+------------------------------------------------------------
+
+
+PATTERN 11: TREES AS GRAPHS (USING ADJ LIST)
+------------------------------------------------------------
+Template:
+adj = {node: [] for all nodes}
+
+function dfs(node, parent):
+    for nei in adj[node]:
+        if nei != parent:
+            dfs(nei, node)
+
+Template BFS:
+queue = [start]
+visited = set([start])
+
+while queue not empty:
+    node = queue.pop_front()
+    for nei in adj[node]:
+        if nei not in visited:
+            visited.add(nei)
+            queue.push(nei)
+------------------------------------------------------------
+
+
+PATTERN 12: MORRIS TRAVERSAL (O(1) SPACE)
+------------------------------------------------------------
+Template (Inorder):
+curr = root
+while curr != null:
+    if curr.left is null:
+        process(curr)
+        curr = curr.right
+    else:
+        pred = curr.left
+        while pred.right != null and pred.right != curr:
+            pred = pred.right
+
+        if pred.right is null:
+            pred.right = curr
+            curr = curr.left
+        else:
+            pred.right = null
+            process(curr)
+            curr = curr.right
+------------------------------------------------------------

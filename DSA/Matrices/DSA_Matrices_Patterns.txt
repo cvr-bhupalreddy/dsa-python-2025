@@ -1,0 +1,46 @@
+===============DSA Matrices Patterns==============
+| Problem                | Approach                          | Key Operation                  |
+| ---------------------- | --------------------------------- | ------------------------------ |
+| Rotate 90° Clockwise   | Transpose → Reverse Rows          | In-place swap + row.reverse()  |
+| Rotate 180°            | Reverse rows → Reverse columns    | mat.reverse(), row.reverse()   |
+| Rotate 270° Clockwise  | Transpose → Reverse Columns       | In-place swap + column swap    |
+| Transpose              | Swap mat[i][j] ↔ mat[j][i]        | In-place or extra-space        |
+| Reverse rows/cols      | row.reverse() / column swap       | Python slice or loop           |
+| Reflection             | Horizontal/Vertical/Diagonal      | row/column reverse + transpose |
+| Check rotations        | Rotate 90° repeatedly and compare | Copy matrix, loop 4 times      |
+| Spiral Traversal       | Maintain top/bottom/left/right    | Append along boundaries        |
+| Generate Spiral Matrix | Boundaries + fill 1→n²            | Assign instead of reading      |
+| Flip Image             | Reverse + invert each row         | row.reverse() + row[i]^=1      |
+
+In python matrix is stored as nested lists 
+reversing rows => matrix.reverse [last list comes first ]
+
+matrix = [ [r1]  [r2] [r3]]
+matrix.reverse() = [ [r3]  [r2] [r1]] = > Reversing all rows 
+
+[r1] = [c1,c2,c3]
+row.reverse() = [c3,c2,c1]  => Reversing cols 
+
+======================================
+1️. Rotate Matrix 90° Clockwise
+
+	Step 1: Transpose the matrix (swap rows and columns)
+	Step 2: Reverse each row
+========================================
+2️. Rotate 180° Clockwise (or Anti-clockwise)
+Approach:
+	Step 1: Reverse all rows (top ↔ bottom)
+	Step 2: Reverse all columns (left ↔ right)
+
+=================================================	
+3️. Rotate 270° Clockwise (same as anti-clockwise 90°)
+Approach:
+	Step 1: Transpose matrix
+	Step 2: Reverse every column
+	
+4️. Rotate 90° Anti-Clockwise
+
+Approach:
+	Step 1: Transpose matrix
+	Step 2: Reverse each column
+=================================================

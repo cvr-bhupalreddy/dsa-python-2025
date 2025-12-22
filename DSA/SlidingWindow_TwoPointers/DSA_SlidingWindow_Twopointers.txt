@@ -1,0 +1,251 @@
+=================Sliding Window Patterns==========
+✅ 1. Opposite/Two-End Pointers (Start & End)
+
+Pattern:
+
+	Use two pointers starting at opposite ends of the array/string.
+
+	Move one or both pointers based on conditions.
+
+Common Uses:
+
+	Searching for pairs with a sum
+
+	Trapping water (max/min problems)
+
+	Palindrome checking
+
+Typical Questions:
+| Problem                   | Description                                |
+| ------------------------- | ------------------------------------------ |
+| Two Sum (Sorted Array)    | Find two numbers that sum to target        |
+| Container With Most Water | Maximize area using two ends               |
+| Trapping Rain Water       | Move pointers toward center, compute water |
+| Valid Palindrome          | Compare characters from start & end        |
+| Minimum Size Subarray Sum | Shrink window from left                    |
+
+
+✅ 2. Slow/Fast Pointers (Tortoise & Hare)
+
+Pattern:
+
+	One pointer moves fast, another slow.
+	Often used for detecting cycles or distances.
+
+Common Uses:
+	Cycle detection in linked list
+	Finding middle of a list
+	Repeated sequence detection
+
+Typical Questions:
+| Problem               | Description                      |
+| --------------------- | -------------------------------- |
+| Linked List Cycle     | Detect if a cycle exists in list |
+| Linked List Cycle II  | Find start of cycle              |
+| Happy Number          | Detect repeated sum sequence     |
+| Middle of Linked List | Slow moves 1 step, fast 2 steps  |
+
+
+✅ 3. Sliding Window / Variable Window Pointers
+
+Pattern:
+
+	Maintain window [left, right].
+	Expand or shrink window based on condition.
+
+Common Uses:
+
+	Subarray sums
+	Maximum/minimum length substrings
+	Character frequency / unique constraints
+
+Typical Questions:
+| Problem                                        | Description                             |
+| ---------------------------------------------- | --------------------------------------- |
+| Longest Substring Without Repeating Characters | Expand right, shrink left               |
+| Minimum Window Substring                       | Smallest substring containing all chars |
+| Sliding Window Maximum                         | Max in all subarrays of size k          |
+| Subarray Sum Equals K                          | Expand/shrink window                    |
+
+
+✅ 4. Fast/Slow or Jump Pointers for Arrays
+
+Pattern:
+	Like slow/fast, but applied to arrays for jumps.
+	Often used in greedy or reachability problems.
+
+Typical Questions:
+| Problem                           | Description                            |
+| --------------------------------- | -------------------------------------- |
+| Jump Game I/II                    | Can you reach the end or minimum jumps |
+| Gas Station                       | Circular array checks                  |
+| Remove Duplicates in Sorted Array | Use write pointer and read pointer     |
+
+
+✅ 5. In-Place Merge / Partition
+
+Pattern:
+
+	Two pointers to reorder array without extra space.
+	Used in sorting or rearranging.
+
+Typical Questions:
+| Problem             | Description                      |
+| ------------------- | -------------------------------- |
+| Move Zeroes         | Move zeros to end                |
+| Dutch National Flag | Sort array with 3 colors         |
+| Merge Sorted Array  | Merge two sorted arrays in place |
+
+
+✅ 6. Meet-in-the-Middle / Converging Pointers
+
+Pattern:
+	Two pointers converge toward each other to optimize O(n) solution.
+	Often used in sum, area, or pair comparisons.
+
+Typical Questions:
+| Problem                   | Description                                     |
+| ------------------------- | ----------------------------------------------- |
+| 3Sum / 4Sum               | Reduce complexity from O(n^3) → O(n^2)          |
+| Container With Most Water | Max area between two lines                      |
+| Trapping Rain Water       | Compute left/right boundaries with two pointers |
+
+✅ Summary Table
+| Pattern            | Core Idea                       | Common Questions                                   |
+| ------------------ | ------------------------------- | -------------------------------------------------- |
+| Opposite Ends      | Left & right converge           | Two Sum, Container With Most Water, Trapping Water |
+| Slow/Fast          | Detect cycles / middle          | Linked List Cycle, Happy Number                    |
+| Sliding Window     | Maintain a window [l, r]        | Longest Substring, Minimum Window Substring        |
+| Jump Pointers      | Optimize array reach            | Jump Game, Gas Station                             |
+| In-Place Partition | Rearrange array in-place        | Move Zeroes, Dutch National Flag                   |
+| Meet-in-the-Middle | Two pointers converge for pairs | 3Sum, Container With Most Water                    |
+
+
+1️ Opposite Ends / Converging Pointers
+
+Pattern: Two pointers left and right move toward each other.
+
+Example: Two Sum in sorted array
+
+def two_sum_sorted(arr, target):
+    left, right = 0, len(arr)-1
+    while left < right:
+        s = arr[left] + arr[right]
+        if s == target:
+            return (left, right)
+        elif s < target:
+            left += 1
+        else:
+            right -= 1
+    return (-1, -1)
+
+
+2. Slow & Fast Pointers (Tortoise & Hare)
+
+Pattern: Slow moves 1 step, fast moves 2 steps.
+Example: Linked List Cycle Detection
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def has_cycle(head):
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            return True
+    return False
+
+
+3️.Sliding Window / Variable Window
+
+Pattern: Maintain [left, right] window, expand/shrink based on condition.
+
+Example: Longest substring without repeating characters
+
+def length_of_longest_substring(s):
+    char_index = {}
+    left = 0
+    max_len = 0
+    for right, ch in enumerate(s):
+        if ch in char_index and char_index[ch] >= left:
+            left = char_index[ch] + 1
+        char_index[ch] = right
+        max_len = max(max_len, right - left + 1)
+    return max_len
+
+
+4️.Fast/Jump Pointers for Arrays
+
+Pattern: Track reachability or steps with two pointers.
+
+Example: Jump Game I (can reach end)
+
+def can_jump(nums):
+    max_reach = 0
+    n = len(nums)
+    for i, jump in enumerate(nums):
+        if i > max_reach:
+            return False
+        max_reach = max(max_reach, i + jump)
+    return True
+
+
+5️.In-Place Merge / Partition
+
+Pattern: Reorder array in-place using two pointers.
+
+def move_zeroes(nums):
+    last_non_zero = 0
+    for i in range(len(nums)):
+        if nums[i] != 0:
+            nums[last_non_zero], nums[i] = nums[i], nums[last_non_zero]
+            last_non_zero += 1
+
+Example: Dutch National Flag
+def sort_colors(nums):
+    low, mid, high = 0, 0, len(nums)-1
+    while mid <= high:
+        if nums[mid] == 0:
+            nums[low], nums[mid] = nums[mid], nums[low]
+            low += 1
+            mid += 1
+        elif nums[mid] == 1:
+            mid += 1
+        else:  # nums[mid] == 2
+            nums[mid], nums[high] = nums[high], nums[mid]
+            high -= 1
+
+
+6️. Meet-in-the-Middle / Pair Comparisons
+
+Pattern: Two pointers converge to find pairs/triplets efficiently.
+
+Example: 3Sum (Sorted Array)
+
+def three_sum(nums):
+    nums.sort()
+    result = []
+    n = len(nums)
+    for i in range(n-2):
+        if i > 0 and nums[i] == nums[i-1]:
+            continue
+        left, right = i+1, n-1
+        while left < right:
+            s = nums[i] + nums[left] + nums[right]
+            if s == 0:
+                result.append([nums[i], nums[left], nums[right]])
+                left += 1
+                right -= 1
+                while left < right and nums[left] == nums[left-1]:
+                    left += 1
+                while left < right and nums[right] == nums[right+1]:
+                    right -= 1
+            elif s < 0:
+                left += 1
+            else:
+                right -= 1
+    return result

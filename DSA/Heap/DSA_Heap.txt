@@ -1,0 +1,177 @@
+========Heap Questions Patterns===========
+🔹 Important Patterns for FAANG Interviews
+	1. Top-K / Selection: min-heap or max-heap of size k
+	2. Sliding Window / Median: two heaps (min/max) or monotonic deque
+	3. Merge / Combine: min-heap for k sorted arrays or ropes
+	4. Graph / Priority Queue: min-heap for Dijkstra, Prim
+	5. Online / Stream: maintain heap dynamically
+	
+High-Frequency Questions (LeetCode / FAANG)
+	Kth Largest Element in Array (LeetCode 215)
+	Top K Frequent Elements (LeetCode 347)
+	Merge K Sorted Lists / Arrays (LeetCode 23 / 373)
+	Sliding Window Maximum (LeetCode 239)
+	Find Median from Data Stream (LeetCode 295)
+	Connect Ropes with Minimum Cost (GFG)
+	K Closest Points to Origin (LeetCode 973)
+	Task Scheduler (LeetCode 621)
+
+🔹 1. Kth Element Problems
+| Problem                                  | Pattern / Notes                                     |
+| ---------------------------------------- | --------------------------------------------------- |
+| Kth Largest Element in Array             | Min-heap of size k (O(N log k))                     |
+| Kth Smallest Element in Array            | Max-heap of size k                                  |
+| Kth Largest/Smallest Element in a Stream | Maintain a heap while streaming elements            |
+| KLargest Elements / KSmallest Elements   | Same as above, return array instead of single value |
+
+
+🔹 2. Top-K Problems / Priority Queue
+| Problem                            | Notes                                   |
+| ---------------------------------- | --------------------------------------- |
+| Top K Frequent Elements            | Use min-heap of size k on frequency map |
+| Top K Numbers / Scores             | Direct min/max heap                     |
+| Top K Largest Sums from Two Arrays | Use max-heap and visited set            |
+
+
+🔹 3. Heap Merge Problems
+| Problem                                       | Notes                                       |
+| --------------------------------------------- | ------------------------------------------- |
+| Merge K Sorted Arrays                         | Use min-heap of size k to merge efficiently |
+| Merge K Sorted Linked Lists                   | Same, classic LeetCode                      |
+| Smallest Range Covering Elements from K Lists | Sliding window + min-heap                   |
+
+
+🔹 4. Sliding Window Problems
+| Problem                | Notes                                        |
+| ---------------------- | -------------------------------------------- |
+| Sliding Window Maximum | Monotonic deque or max-heap                  |
+| Sliding Window Median  | Two heaps (max + min) for median maintenance |
+| Sliding Window Minimum | Monotonic deque or min-heap                  |
+
+
+🔹 5. Median / Running Median
+| Problem                           | Notes                                        |
+| --------------------------------- | -------------------------------------------- |
+| Find Median in Data Stream        | Two heaps: max-heap (left), min-heap (right) |
+| Median of Two Sorted Arrays       | Variants with heaps possible                 |
+| Continuous Median / Moving Median | Heap-based online solution                   |
+
+
+🔹 6. Priority Scheduling / Event Problems
+| Problem                              | Notes                                                 |
+| ------------------------------------ | ----------------------------------------------------- |
+| Connect Ropes with Minimum Cost      | Min-heap of rope lengths, always combine two smallest |
+| Minimum Cost to Connect Sticks       | Same as above                                         |
+| Task Scheduling / CPU Task Scheduler | Use max-heap for task frequency                       |
+| K Closest Points to Origin           | Min-heap or max-heap depending on approach            |
+
+
+🔹 7. Miscellaneous / Classic Heap Problems
+| Problem                               | Notes                   |
+| ------------------------------------- | ----------------------- |
+| Smallest/Largest Number from K digits | Heap + greedy           |
+| Kth Smallest/Largest Pair Distance    | Heap + binary search    |
+| Stream of Integers: Find Kth Largest  | Online heap maintenance |
+| Continuous Median Maintenance         | Two heaps               |
+
+
+
+==============Heaps=============
+
+🟦 Heap Data Structure
+
+A Heap is a complete binary tree which satisfies the heap property:
+
+🔹 Heap Properties
+	Complete Binary Tree
+	All levels except possibly the last are fully filled.
+	Last level is filled from left to right.
+
+Heap Order Property (Two types):
+	Max Heap: Parent ≥ Children (root is maximum)
+	Min Heap: Parent ≤ Children (root is minimum)
+
+Shape Property:
+	Tree is always balanced, so height = O(log N)
+
+| Operation                      | Description                          | Time Complexity |
+| ------------------------------ | ------------------------------------ | --------------- |
+| insert(value)                	 | Add value to heap                    | O(log N)        |
+| extract_max / extract_min  	 | Remove root element                  | O(log N)        |
+| peek()                       	 | Return root value                    | O(1)            |
+| heapify_up / reheap_up     	 | Adjust node upwards after insertion  | O(log N)        |
+| heapify_down / reheap_down 	 | Adjust node downwards after deletion | O(log N)        |
+| build_heap                   	 | Convert array into heap              | O(N)            |
+
+
+
+🔹 Heapify Methods
+1. Reheap Up (heapify_up / bubble_up)
+	After insertion at the end of the array
+	Swap the node with parent if heap property violated
+	Repeat until heap property restored or reach root
+
+2. Reheap Down (heapify_down / bubble_down)
+	After removing root
+	Move last element to root
+	Swap with larger (max-heap) / smaller (min-heap) child if heap property violated
+	Repeat until heap property restored
+
+🔹 Heap Sort
+	Build a heap (min or max) from array
+	Repeatedly extract root and store in sorted array
+	Time Complexity: O(N log N)
+	Space Complexity: O(1) for in-place version
+
+
+🟧 Optimal Idea — Heapify Bottom-Up
+
+Observation:
+	In an array representation of a heap:
+	For index i, left child = 2*i + 1, right child = 2*i + 2
+	Leaf nodes automatically satisfy heap property.
+	So we only need to heapify internal nodes (non-leaf nodes).
+	
+Algorithm (Bottom-Up Heapify):
+
+for i = n/2 - 1 downto 0:
+    heapify(arr, i, n)
+
+
+n/2 - 1 is the last parent node.
+
+heapify ensures subtree rooted at i satisfies heap property.
+
+Process nodes from bottom to top.
+
+heapify(arr, i, n):
+    largest = i
+    left = 2*i + 1
+    right = 2*i + 2
+    if left < n and arr[left] > arr[largest]:
+        largest = left
+    if right < n and arr[right] > arr[largest]:
+        largest = right
+    if largest != i:
+        swap(arr[i], arr[largest])
+        heapify(arr, largest, n)
+
+
+🔹 Why This is O(n) Time?
+
+Intuition:
+
+	Each node at height h may move down at most h steps during heapify.
+	Number of nodes at height h in a complete binary tree = ceil(n / 2^(h+1))
+	Work done at height h = nodes * height = [n / 2^(h+1)] * h
+	So total work:
+	∑(h/2^(2h+1)) = 1 GP 
+	Therefore T(n) = O(n)
+
+Alternative Explanation (Intuition)
+	Most nodes are near the bottom (leaves).
+	Leaf nodes → height 0 → 0 work
+	Nodes one level above → height 1 → few swaps
+	Only root → height log n → maximum swaps
+	Since most nodes are at lower heights, the average work per node is constant.
+	Hence total work = O(n).

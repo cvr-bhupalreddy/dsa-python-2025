@@ -1,0 +1,440 @@
++--------------------------------------------+---------------------------------------------------------------+
+| Pattern                                    | Popular Problems                                              |
++--------------------------------------------+---------------------------------------------------------------+
+| Basic Traversal / Insertion / Deletion     | Insert in Linked List                                         |
+|                                            | Delete Node in Linked List                                    |
+|                                            | Search in Linked List                                         |
+|                                            | Middle of Linked List                                         |
++--------------------------------------------+---------------------------------------------------------------+
+| Fast & Slow Pointers (Two Pointers)        | Detect Cycle in Linked List (Floyd)                           |
+|                                            | Find Start of Cycle                                           |
+|                                            | Middle of Linked List                                         |
+|                                            | Check if Linked List is Palindrome                            |
++--------------------------------------------+---------------------------------------------------------------+
+| Reversing Linked Lists                     | Reverse Linked List (Iterative)                               |
+|                                            | Reverse Linked List (Recursive)                               |
+|                                            | Reverse in K-Groups                                            |
+|                                            | Reverse Between Positions (m,n)                               |
++--------------------------------------------+---------------------------------------------------------------+
+| Linked List + Dummy Node Pattern           | Remove Nth Node from End                                      |
+|                                            | Merge Two Sorted Lists                                        |
+|                                            | Add Two Numbers (Linked Lists)                                |
+|                                            | Partition List                                                |
++--------------------------------------------+---------------------------------------------------------------+
+| Merge Techniques (Divide & Conquer)        | Merge K Sorted Lists                                          |
+|                                            | Sort Linked List (Merge Sort)                                 |
++--------------------------------------------+---------------------------------------------------------------+
+| Hashing / Extra Space Techniques           | Copy List With Random Pointer                                 |
+|                                            | Detect Cycle using Hash Set                                   |
++--------------------------------------------+---------------------------------------------------------------+
+| Sliding Window on Linked List              | Remove Nodes in Sliding Window (rare but asked)               |
+|                                            | Find K-th node from end                                       |
++--------------------------------------------+---------------------------------------------------------------+
+| Math + Linked Lists                        | Add Two Numbers                                               |
+|                                            | Multiply Two Linked Lists                                     |
+|                                            | Add Two Numbers II                                            |
++--------------------------------------------+---------------------------------------------------------------+
+| Reconstruction / Reordering Lists          | Reorder List (L1→Ln→L2→Ln–1...)                               |
+|                                            | Odd Even Linked List                                          |
+|                                            | Flatten Multilevel Doubly Linked List                         |
++--------------------------------------------+---------------------------------------------------------------+
+| Advanced Pointer Manipulation              | Swap Nodes in Pairs                                           |
+|                                            | Rotate List                                                   |
+|                                            | Delete Middle Node                                            |
++--------------------------------------------+---------------------------------------------------------------+
+
+Most Popular DLL (Doubly Linked List) Patterns + Problems
++--------------------------------------------+---------------------------------------------------------------+
+| DLL Pattern                                | Popular Problems                                              |
++--------------------------------------------+---------------------------------------------------------------+
+| Basic DLL Operations                       | Insert at head                                                |
+|                                            | Insert at tail                                                |
+|                                            | Insert at specific position                                   |
+|                                            | Delete node (head, tail, given pointer)                       |
+|                                            | Reverse Doubly Linked List                                    |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL Traversal Patterns                     | Traverse forward                                              |
+|                                            | Traverse backward                                             |
+|                                            | Find Kth node from front/back                                 |
++--------------------------------------------+---------------------------------------------------------------+
+| Sorted DLL Operations                      | Insert in sorted DLL                                          |
+|                                            | Remove duplicates from sorted DLL                             |
+|                                            | Merge two sorted DLLs                                         |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL Reordering Patterns                    | Rotate DLL                                                    |
+|                                            | Pairwise Swap Nodes                                           |
+|                                            | Rearrange nodes by odd-even positions                         |
++--------------------------------------------+---------------------------------------------------------------+
+
+
+----To Stop at Last Node [ while curr.next]
+----To stop at Second Last Node : [  while curr.next.next]
+
+============Finding Linked list middle ========
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+
+🎯 FINAL SUMMARY (VERY IMPORTANT)
+| List Length | Middle Elements | Where Slow Stops (standard loop) |
+| ----------- | --------------- | -------------------------------- |
+| Even length | Two middles     | **Second middle element**        |
+| Odd length  | One middle      | That exact middle                |
+
+----Code to stop at 1St Middle----
+while fast.next and fast.next.next:
+    slow = slow.next
+    fast = fast.next.next
+
+
+
+
+=============Standard SLL Templates=============
+
+
+==========Standard DLL Templates==============
+
+
+
+
+===================================================
+
+
+
+Root Problems 
+	Reverse 
+	Length 
+	Finding Middle 
+	Cycle Detection 
+	Merging Sorted LL 
+	Sorting LL using Merge sort Technique 
+	Merging K stoted LL (Using Heap)
+
+
+================Striver Linked List============================
+=====Seggrigating Odd and Even Positions in LL =======
+Traversing and collecting data in Array 
+
+Replacing data 
+
+TC : o(n ) SC : O(N)
+
+----Inplace 
+Odd and Even Dummy Nodes 
+
+
+----Sort Linked list with 0'S , 1'S AND 2'S===========
+Count 0 , 1 and 2  in First pass 
+Replace data in the 2nd pass 
+ TC : O(2N) 
+ 
+==Optimal Approach====
+ZeroHead : L0  
+OneHead  : L1 
+TwoHead : L2 
+
+adding o's 1's and 2's to corresponding lists , finally attaching links 
+
+
+-----Delete Nth Node from End--------
+
+	2pass Algorithm 
+		Find the Length of LL O(N)
+		Delete Element Length - N ===> O(N)
+		
+		
+	1 Pass Algorithm Using 2 Pointers 
+		Fast will traverse N steps First 
+		Slow and Fast will traverse till fast reaches end 
+		
+			==> Fast = X + N 
+				Slow = X steps 
+				
+				Length = X + N 
+				
+				X = Length - N ==>Slow Pointer points required position before place 
+	
+
+
+Q). ----Reverse a Linked List-----
+	---2 pass Algorithm 
+		traverse LL and put all elements in stack 
+		2nd pass modify data in Node using Stack 
+			
+		TC : O(2N) SC : O(N)
+
+	----One Pass Inplace -----
+   head = null or head.next = null 
+	return head 
+	
+	prev = null 
+	temp = head 
+	while(temp)
+	{
+		front = temp.next 
+		temp.next = prev 		
+		prev = temp 
+		temp = front 
+	}
+	TC : O(N) SC : O(1)
+	
+	-----One Pass Recursion ----
+	
+	reverseLL(head) 
+		if(head == NULL or head.next == NULL )
+			return head 
+		
+		newHead = reverseLL(head.next)
+		front = head.next 		
+		front.next = head 
+		head.next = null 
+		return newHead 
+		
+		TC : O(N) SC : O(N) recursive stack space 
+		
+		
+Q) =============Check if Linked List is Palindrome or Not============
+
+	Sol 1== [TC : O(2N) , SC : O(N) ]
+	Pass 1 Put all the elements in stack 
+	Pass 2 Compare LL elements and Stack Element [ all match TRUE else False]
+
+
+	======Tortoise and Hare Algorithm =======
+		Finding the middle of Linked List 
+		
+		slow -- One step 
+		fast -- 2 steps 
+		
+		slow = head 
+		fast = head 
+		
+		while(fast.next != null && fast.next.next != null)
+			slow = slow.next 
+			fast = fast.next.next 
+		
+		find the middle , reverse the second half 	
+		Compare first half and Second Half 
+		Reverse back to original state 
+		newHead = reverseLL(slow.next )
+		
+		
+Q) =============ADD 1 to the Number Represented by  Linked List============
+		===
+		ReverseLL 
+		ADD 1 to Number 
+		and Reverse Back 
+		
+		[TC : O(3N) , SC : O(1) ]
+		
+		===Using Recursion Logic 
+		
+		finalCarry = add1(head)
+		
+		if(finalCarry) 
+			newNode = new Node(1)
+			newNode.next = head 
+			return newNode
+				
+		return head 
+		
+		
+		add1(head) :
+			temp = head 
+			if(temp == null )
+				return 1 
+			
+			newCarry = 		add1(temp.next)
+			
+			temp.data = temp.data + carry 
+			
+			if(temp.data < 10)
+				return 0 ;
+				
+			temp.data = 0 
+			return 1
+			
+			 
+			
+		
+Q) =============Intersection of 2  Linked List============
+	Using Hashing , it uses Extra memory 
+
+	Couting N1 and N2 
+	Travel difference distance 
+	then compare 1 by one 
+		
+		
+	==== Sending to Opposite Head so that they will traverse same distance and collide at common Point 
+	while(t1 != t2)
+	{
+		t1 = t1.next 
+		t2 = t2.next 
+		
+		 if(t1 == t2) return t1 
+		
+		if(t1 == NULL ) t1 = head2 
+		if(t2 == NULL) t2 = head1 
+	}
+	return t1 
+		
+		slow will find the middle of LL 
+		Reverse 2nd Half 
+		compare with 1St Half 
+		[TC : O(2N) , SC : O(1) ]
+	
+	
+
+	
+===============Finding Middle of LinkedList===================
+
+Find Length of LL , N/2 + 1 [ 2 Traversals Required ] not accepted 
+
+Even 
+Odd 
+use Slow and Fast Pointers 
+	ODD Length fast will reach Last Node 
+	Event Length Fast Pointer reach NULL 
+	
+	while( fast != NULL && fast.next != NULL)
+		slow = slow.next 
+		fast = fast.next.next 
+		
+	return slow 
+	[TC : O(N/2) , SC : O(1) ]
+	
+
+==========Finding Cycle in LL===================
+	
+Use Hashing   HashMap<Node , Boolen> 
+		
+	
+Using Slow and Fast Pointer 
+
+Why it works 
+
+	Between  Slow and Fast Pointer distance is D . Fast Moves towards slow by 2 steps and Slow Moves away from Fast by 1 step effective distance will be D-1 
+		After D steps both will meet . [ Effective reduction is 1  and D is divisible by 1 so they will meet at some point if there is a loop ]
+
+	slow = head 
+	fast = head 
+	
+	while( fast != null and fast.next != null )
+		fast = fast.next.next 
+		slow = slow.next 
+		
+		if(fast == slow) 
+			return true 		
+	return false 
+	
+	
+=======Finding Length of Cycle==========
+1. Using Hashing with Timer HashMap<Node , Integer> 
+
+2. Using Slow and Fast Pointer 
+	at meeting point of both slow and fast call a Function with findLength(slow , fast)
+	
+	findLength(slow , fast)
+		counter = 1 ;
+		slow = slow.next 
+		
+		while(fast != slow)
+			counter ++ 
+			slow = slow.next 
+		return counter 
+		
+		
+========Finding Starting Point of Cycle========
+once they both meet then send one of the slow or fast pointer to head of LL and move both pointers simultaneously 
+Next meeting point is the start of the cycle 
+
+
+
+===========Merging 2 Sorted Linked Lists 
+	Use Merge sort Logic 
+	
+==========Merging N sorted Linked Lists ============
+N1 + N2  = 2N 
+ 
+N1 + N2 + N3  = 3N 
+
+N1 + N2 + N3 + N4 = KN 
+
+N* N
+
+N + 2N + 3N + ....+ K*N  = N (1+2+3+4+...+K) = N (K(K+1))/2 ===> N^3 
+
+Merge sort logic is not good 
+
+----Use Min-Heap------
+Push all the Lists first element into Min heap 
+
+take out min node and Add to result Linked List 
+
+add Log(K) * K 
+
+
+K*N * log(K)
+
+
+
+=========Sorting Linked List=============
+Brute Force 
+	LL to Array 
+	Sort Array 
+	Sorted Array to LL 
+
+TC : O(N) + O(NlogN) + O(N)
+SC : O(N)
+
+
+---Without Extra Space----
+TC : (N/2 finding Middle + Merging N ) * Log N Recursion depth 
+
+
+
+=============Copy List with Random Pointers=========
+
+
+Most Popular DLL (Doubly Linked List) Patterns + Problems
++--------------------------------------------+---------------------------------------------------------------+
+| DLL Pattern                                | Popular Problems                                              |
++--------------------------------------------+---------------------------------------------------------------+
+| Basic DLL Operations                       | Insert at head                                                |
+|                                            | Insert at tail                                                |
+|                                            | Insert at specific position                                   |
+|                                            | Delete node (head, tail, given pointer)                       |
+|                                            | Reverse Doubly Linked List                                    |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL Traversal Patterns                     | Traverse forward                                              |
+|                                            | Traverse backward                                             |
+|                                            | Find Kth node from front/back                                 |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL + HashMap (LRU / LFU Cache)            | LRU Cache Implementation                                      |
+|                                            | LFU Cache Implementation                                      |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL as a Deque / Custom Queue              | Implement Deque using DLL                                     |
+|                                            | Implement Queue with DLL                                      |
+|                                            | Implement Stack with DLL                                      |
++--------------------------------------------+---------------------------------------------------------------+
+| Sorted DLL Operations                      | Insert in sorted DLL                                          |
+|                                            | Remove duplicates from sorted DLL                             |
+|                                            | Merge two sorted DLLs                                         |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL + Special Structures                   | Flatten Multilevel Doubly Linked List                         |
+|                                            | Flatten Binary Tree to DLL (inorder)                          |
+|                                            | Convert BST to Sorted DLL                                     |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL Reordering Patterns                    | Rotate DLL                                                    |
+|                                            | Pairwise Swap Nodes                                           |
+|                                            | Rearrange nodes by odd-even positions                         |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL as a Sliding Window                    | Maximum of All Subarrays (DLL deque implementation)           |
+|                                            | Sliding window min/max using DLL                              |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL as Indexed Storage                     | Browser Back/Forward Design                                   |
+|                                            | Design History Navigation System                              |
++--------------------------------------------+---------------------------------------------------------------+
+| DLL Cyclic Patterns                        | Convert DLL to circular DLL                                   |
+|                                            | Circular DLL operations (insert/delete)                       |
++--------------------------------------------+---------------------------------------------------------------+
