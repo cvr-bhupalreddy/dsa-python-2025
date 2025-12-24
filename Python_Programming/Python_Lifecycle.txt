@@ -1,0 +1,207 @@
+=====================Python Execution Lifecycle===============
+import math
+
+x = 10            # global variable
+
+def outer(a):
+    y = 20        # enclosing variable
+
+    def inner(b):
+        z = 30    # local variable
+        return x + y + a + b + z
+
+    return inner
+
+result_func = outer(5)
+final_result = result_func(7)
+
+
+
+PHASE 1️ INTERPRETER STARTS
+
+	• Python interpreter starts
+	• Built-in namespace created
+	• Built-in functions loaded (print, len, int, etc.)
+
+Namespaces:
+	Built-in namespace
+
+
+PHASE 2️ COMPILATION PHASE
+
+	• Source code is read
+	• Syntax is validated
+	• AST is created
+	• Bytecode is generated
+
+	❌ No variables created
+	❌ No functions executed
+	❌ No name binding
+
+	Only structure is validated.
+
+PHASE 3️ MODULE INITIALIZATION (EXECUTION STARTS)
+
+Now Python starts executing top-level code line by line.
+
+	• Python searches for math module
+	• math module is compiled (if needed)
+	• math module code is executed
+	• math module namespace created
+	• Name 'math' bound in global namespace
+
+Namespaces now:
+	Built-in
+	Global (current module)
+	math module namespace
+
+LINE 3: x = 10
+
+What happens:
+	• Integer object 10 created in heap
+	• Name 'x' bound to object 10
+	• Stored in global namespace
+
+LINE 5: def outer(a):
+
+What happens:
+	• Function object 'outer' created
+	• Function body NOT executed
+	• Name 'outer' bound in global namespace
+
+Namespaces:
+	Built-in
+	Global → contains math, x, outer
+
+
+PHASE 4️ RUNTIME EXECUTION
+	LINE 13: result_func = outer(5)
+	This is a function call, so big things happen.
+
+
+STEP A: CALLING outer(5)
+
+What happens:
+
+	• New local namespace created for outer()
+	• Parameter 'a' bound to 5
+
+
+	Namespaces now:
+
+	Global
+	└── outer local namespace
+
+LINE 6 inside outer: y = 20
+
+What happens:
+	• int(20) created
+	• Name 'y' bound in outer's local namespace
+
+
+LINE 8: def inner(b):
+
+What happens:
+	• inner function object created
+	• inner remembers enclosing scope (closure)
+	• Name 'inner' bound in outer's local namespace
+
+
+LINE 11: return inner
+
+What happens:
+	• inner function object returned
+	• outer() execution ends
+	• outer local namespace destroyed EXCEPT closure variables
+
+LINE 13 assignment completes
+result_func = outer(5)
+
+
+What happens:
+	• result_func bound to inner function
+	• inner carries closure: y=20, a=5
+
+LINE 14: final_result = result_func(7)
+
+This calls inner(7).
+
+STEP B: CALLING inner(7)
+What happens:
+	• New local namespace for inner()
+	• Parameter 'b' bound to 7
+
+Global
+└── inner local namespace
+     └── enclosing outer namespace (closure)
+
+
+LINE 9: z = 30
+
+What happens:
+	• int(30) created
+	• z bound in inner local namespace
+
+LINE 10: return x + y + a + b + z
+
+Name resolution (LEGB):
+
+	x → Global
+	y → Enclosing (outer)
+	a → Enclosing (outer)
+	b → Local (inner)
+	z → Local (inner)LINE 10: return x + y + a + b + z
+
+Name resolution (LEGB):
+
+	x → Global
+	y → Enclosing (outer)
+	a → Enclosing (outer)
+	b → Local (inner)
+	z → Local (inner)
+
+
+NAMESPACE CREATION TIMELINE (VERY IMPORTANT)
+1. Built-in namespace → interpreter start
+2. Global namespace → module execution
+3. outer local namespace → outer() call
+4. inner local namespace → inner() call
+5. Enclosing namespace persists via closure
+
+KEY TAKEAWAYS (INTERVIEW GOLD)
+	• Python executes top-level code line by line
+	• Names bind to objects only at runtime
+	• Function definitions create objects, not execution
+	• Closures preserve enclosing scope
+	• Namespaces are created dynamically
+	• LEGB rule controls name lookup
+
+
+Important function metadata 
+
+print(foo.__name__)      # function name
+print(foo.__module__)   # module where defined
+print(foo.__doc__)      # docstring
+print(foo.__code__)     # compiled bytecode object
+
+
+• Function objects are created at runtime when def executes
+• Function name is a reference to function object
+• Printing function name prints the function object
+• Functions have metadata (__name__, __code__, etc.)
+• Functions live in namespaces like any other object
+
+
+======Function execution visuvalization======
+1. Compilation
+   → foo's bytecode created
+   → NO function object
+
+2. Execution hits def foo
+   → Function object created
+   → Name foo bound
+
+3. Execution hits foo()
+   → Stack frame created
+   → Function body executed
+

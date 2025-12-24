@@ -1,0 +1,403 @@
+=====================Python Internal Structures=================
+typedef struct _object {
+    Py_ssize_t ob_refcnt;
+    struct _typeobject *ob_type;
+} PyObject;
+
+
+PyObject
+│
+├── ob_refcnt
+│   └── Reference count
+│       (number of active references)
+│
+└── ob_type
+    └── Pointer to PyTypeObject
+        (defines behavior of the object)
+
+
+typedef struct {
+    PyObject ob_base;
+    Py_ssize_t ob_size;
+} PyVarObject;
+
+
+PyVarObject
+│
+├── PyObject
+│   ├── refcount
+│   └── type pointer
+│
+└── ob_size
+    └── Logical size
+        (number of elements)
+
+
+typedef ssize_t Py_ssize_t;
+
+
+
+typedef struct _typeobject {
+    PyObject_VAR_HEAD
+
+    const char *tp_name;
+    Py_ssize_t tp_basicsize;
+    Py_ssize_t tp_itemsize;
+
+    destructor tp_dealloc;
+
+    reprfunc tp_repr;
+    hashfunc tp_hash;
+    ternaryfunc tp_call;
+
+    getattrofunc tp_getattro;
+    setattrofunc tp_setattro;
+
+    PyNumberMethods *tp_as_number;
+    PySequenceMethods *tp_as_sequence;
+    PyMappingMethods *tp_as_mapping;
+
+    PyObject *tp_dict;
+    struct _typeobject *tp_base;
+
+} PyTypeObject;
+
+
+Any Python Object
+│
+├── refcount
+├── ob_type ─────────────▶ PyTypeObject
+│                          │
+│                          ├── type name ("list", "int")
+│                          ├── method table
+│                          ├── operator handlers
+│                          ├── inheritance info
+│                          ├── attribute dictionary
+│                          └── memory layout info
+
+
+
+
+List:
+• Ordered
+• Indexed by position
+• Stores values
+
+Dict:
+• Key-value mapping
+• Indexed by hash
+• Stores keys + values
+
+Set:
+• Unique elements
+• Indexed by hash
+• Stores keys only
+
+
+
+===================List================
+typedef struct {
+    PyVarObject ob_base;
+    PyObject **ob_item;
+    Py_ssize_t allocated;
+} PyListObject;
+
+
+PyListObject
+│
+├── ob_base (PyVarObject)
+│   ├── refcount
+│   ├── type pointer → list
+│   └── size (len(list))
+│
+├── ob_item
+│   └── Pointer to array of PyObject*
+│
+└── allocated
+    └── Capacity (slots allocated)
+
+List Object
+│
+├── refcount
+├── type info
+├── size = 3
+├── capacity = 8
+└── array
+    ├── obj1
+    ├── obj2
+    ├── obj3
+    ├── NULL
+    ├── NULL
+    ├── NULL
+    ├── NULL
+    └── NULL
+
+
+==========Dict==========
+typedef struct {
+    PyObject_HEAD
+    Py_ssize_t ma_used;
+    PyDictKeysObject *ma_keys;
+    PyObject **ma_values;
+} PyDictObject;
+
+
+FIELD EXPLANATION
+PyDictObject
+│
+├── PyObject_HEAD
+│   ├── refcount
+│   └── type pointer → dict
+│
+├── ma_used
+│   └── Number of key-value pairs
+│
+├── ma_keys
+│   └── Hash table (keys + hashes)
+│
+└── ma_values
+    └── Array of value pointers
+
+
+
+Dict Object
+│
+├── refcount
+├── type info
+├── used = 3
+├── keys table
+│   ├── hash(k1) → index 0
+│   ├── hash(k2) → index 1
+│   └── hash(k3) → index 2
+└── values array
+    ├── v1
+    ├── v2
+    └── v3
+
+
+
+
+=============Set===========
+typedef struct {
+    PyObject_HEAD
+    Py_ssize_t fill;
+    Py_ssize_t used;
+    PySetEntry *table;
+    Py_ssize_t mask;
+} PySetObject;
+
+
+PySetObject
+│
+├── PyObject_HEAD
+│   ├── refcount
+│   └── type pointer → set
+│
+├── fill
+│   └── Active + dummy slots
+│
+├── used
+│   └── Number of elements
+│
+├── table
+│   └── Hash table entries
+│
+└── mask
+    └── Size mask (power-of-two optimization)
+
+
+
+typedef struct {
+    PyObject *key;
+    Py_hash_t hash;
+} PySetEntry;
+
+
+Set Object
+│
+├── refcount
+├── type info
+├── used = 3
+├── hash table
+│   ├── hash(a) → slot
+│   ├── hash(b) → slot
+│   └── hash(c) → slot
+└── (no values, only keys)
+
+
+
+
+
+===============Tuple=============
+typedef struct {
+    PyVarObject ob_base;
+    PyObject *ob_item[1];
+} PyTupleObject;
+
+
+PyVarObject
+│
+├── PyObject
+│   ├── ob_refcnt
+│   └── ob_type → tuple
+│
+└── ob_size
+    └── Number of elements (len(tuple))
+
+
+PyObject *ob_item[1]
+	• Inline array of PyObject pointers
+	• Allocated contiguously with struct
+	• Size = ob_size elements (not actually 1)
+
+Example allocation:
+malloc(sizeof(PyTupleObject) + n * sizeof(PyObject*))
+
+Tuple Object
+│
+├── refcount
+├── type info → tuple
+├── size = 3
+└── inline array
+    ├── obj1
+    ├── obj2
+    └── obj3
+
+
+================Resizing Summaries==============
+LIST:
+• Resize array only
+• Copy pointers
+• No re-hashing
+
+DICT:
+• Resize hash table
+• Re-hash keys
+• Rebuild values array
+
+SET:
+• Resize hash table
+• Re-hash keys
+• No values array
+
+
+WHAT NEVER CHANGES (ALL)
+	ob_type     → same type object
+	refcount    → not affected by resize
+	object identity → preserved
+
+
+
+=====Dict Resizing=====
+Resize Trigger : [ fill / table_size > load_factor ]
+
+RESIZING ALGORITHM (HIGH LEVEL)
+	Allocate NEW key table (bigger size)
+	Re-hash ALL active keys
+	Recompute index positions
+	Create new values array
+	Swap old tables with new ones
+
+WHAT CHANGES IN PyDictObject
+	ma_keys    → NEW hash table
+	ma_values  → NEW values array
+
+
+ma_used    → unchanged
+ob_type    → unchanged
+refcount   → unchanged
+
+
+======Set Resizing==========
+Resize Trigger : [ fill / table_size > load_factor ]
+
+RESIZING ALGORITHM (HIGH LEVEL)
+	Allocate NEW hash table
+	Re-hash ALL active keys
+	Reinsert into new table
+	Update mask
+
+table  → NEW hash table
+mask   → updated (size - 1)
+fill   → recomputed
+
+used   → unchanged
+ob_type → unchanged
+
+
+
+mask = table_size - 1
+
+• Table size is ALWAYS power of 2
+• Used to compute index efficiently
+• Replaces modulo (%) with bitwise AND
+
+index = hash(key) & mask
+
+WHY MASK IS USED
+
+• Faster than %
+• Ensures index is in range
+• Works only because size is power of 2
+
+used → actual elements
+fill → active + dummy
+
+
+
+
+=============Python Design Considerations============
+1. MEMORY MANAGEMENT
+| Aspect                | C                                         | Python                                                         | Design Consideration / Tradeoff                                |
+| --------------------- | ----------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------- |
+| Allocation            | Manual (`malloc`, `free`)                 | Automatic (heap, via garbage collector / refcount)             | Python trades explicit control for safety and simplicity       |
+| Deallocation          | Manual                                    | Automatic (reference counting + GC cycles)                     | Reduces memory leaks, but GC can add overhead                  |
+| Object Representation | Fixed size, primitives directly in memory | PyObject-based, pointers to heap objects                       | Easier polymorphism and dynamic typing, higher memory overhead |
+| Memory overhead       | Minimal                                   | Higher (every object has type pointer, refcount, extra fields) | Easier to manage but more memory-intensive                     |
+| Arrays / Sequences    | Contiguous fixed-size arrays              | Lists: dynamic arrays, may over-allocate                       | Trades memory efficiency for amortized O(1) append             |
+
+Takeaway: Python favors safe, automated memory management; C favors low-overhead control.
+
+2. SPEED / PERFORMANCE
+| Aspect                  | C                               | Python                                                   | Design Consideration / Tradeoff                            |
+| ----------------------- | ------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
+| Execution               | Compiled to native machine code | Interpreted / bytecode in CPython                        | Python is slower (~10–100x) but portable and flexible      |
+| Arithmetic / Primitives | Direct CPU operations           | PyObjects with function calls for operations             | Easier dynamic behavior, slower arithmetic                 |
+| Loops / recursion       | Very fast                       | Slower due to dynamic type checks & interpreter overhead | Python favors simplicity and readability over raw speed    |
+| I/O                     | Manual buffering, OS calls      | Built-in buffering, abstraction                          | Easier, safer, portable                                    |
+| Optimizations           | Manual (inline, pointer tricks) | Some internal optimizations (caching, small ints)        | Still slower than C, but good enough for most applications |
+
+Takeaway: Python prioritizes developer productivity over raw performance, though it can interface with C for speed-critical sections.
+
+3. EASE OF USE / PROGRAMMABILITY
+| Aspect           | C                                             | Python                                    | Design Consideration / Tradeoff               |
+| ---------------- | --------------------------------------------- | ----------------------------------------- | --------------------------------------------- |
+| Syntax           | Verbose, requires explicit type declarations  | Clean, high-level, dynamic typing         | Easier to read and write; reduces boilerplate |
+| Memory Safety    | Manual, prone to leaks and undefined behavior | Automatic, with safety checks             | Safer, fewer bugs                             |
+| Dynamic Features | Limited (function pointers, macros)           | Dynamic typing, reflection, introspection | Highly flexible, supports meta-programming    |
+| Data Structures  | Manual (structs, arrays)                      | Built-in list, dict, set, tuple, string   | Productivity gain, less boilerplate           |
+| Error Handling   | Error codes / setjmp                          | Exceptions                                | Cleaner, structured error management          |
+| Portability      | Needs manual adjustments for platform         | Interpreted / bytecode portable           | Write once, run anywhere                      |
+
+Takeaway: Python is designed for rapid development, readability, and programmer productivity, sacrificing some speed and memory efficiency.
+
+4. SUMMARY / DESIGN PRINCIPLES
+	Safety first – Python avoids undefined behavior (garbage collection, reference counting).
+	Ease of use – High-level syntax, dynamic typing, built-in structures.
+	Portability – Runs on multiple platforms without recompilation.
+	Speed is secondary – Optimized for developer time, not raw execution.
+	Memory overhead accepted – Extra fields in PyObject, dynamic arrays, hash tables.
+	Extensibility – Easy to interface with C/C++ for critical code.
+	
+Memory Layout Comparison: Python vs C
+Type               | C Memory Layout                              | Python Memory Layout (CPython)                                    | Notes / Why Python is different
+------------------ | -------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------
+int                | 4 or 8 bytes (platform-dependent)            | PyLongObject: ob_refcnt, ob_type, ob_size, ob_digit[]             | Arbitrary precision, extra fields, immutable
+Mental Model       | [value]                                      | [refcount][type pointer][size][digits array]                     | Python stores type info + reference count
+float              | 8 bytes (IEEE 754)                           | PyFloatObject: ob_refcnt, ob_type, double value                  | Immutable, heap-allocated, object header included
+bool               | 1 byte (0 or 1)                              | PyBoolObject subclass of int: ob_refcnt, ob_type, value (0 or 1) | Singleton objects, only True and False exist
+char / string      | Fixed-size char array (e.g., char str[10])   | PyUnicodeObject: ob_refcnt, ob_type, length, hash, data pointer  | Variable length, Unicode support, cached hash, immutable
+list / array       | Contiguous memory array of elements          | PyListObject: ob_refcnt, ob_type, ob_size, ob_item pointer, allocated | Dynamic array, stores pointers, supports resizing
+tuple              | Contiguous memory array of elements          | PyTupleObject: ob_refcnt, ob_type, ob_size, ob_item[1] inline    | Immutable, size fixed at creation, elements stored inline
+dict / hashmap     | Custom struct / hash table (C)               | PyDictObject: ob_refcnt, ob_type, ma_used, ma_keys pointer, ma_values pointer | Hash table with keys + values, dynamic resizing, separate storage
+set                | Custom struct / hash table (C)               | PySetObject: ob_refcnt, ob_type, used, fill, table pointer, mask | Hash table of keys only, mask for fast index, fill includes dummies

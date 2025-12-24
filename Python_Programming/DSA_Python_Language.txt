@@ -1,0 +1,948 @@
+==================Python Language==========
+
+| Precedence (High → Low) | Operator(s)                                                  			| Description                                                     | Associativity        |                   |
+| --------------------------- | ---------------------------------------------------------------- 	| --------------------------------------------------------------- | -------------------- | ----------------- |
+| 1                       | ()                                                             			| Parentheses (grouping, function calls, tuples, etc.)            | Left to Right        |                   |
+| 2                       | [], {}, obj.attr                                           				| Indexing, slicing, dictionary/set creation, attribute reference | Left to Right        |                   |
+| 3                       | await                                                          			| Await expression (async/await)                                  | Left to Right        |                   |
+| 4                       | **                                                             			| Exponentiation                                                  | Right to Left        |                   |
+| 5                       | +x, -x, ~x                                                 				| Unary plus, unary minus, bitwise NOT                            | Right to Left        |                   |
+| 6                       | , /, //, %                                              				| Multiplication, division, floor division, remainder             | Left to Right        |                   |
+| 7                       | +, -                                                         			| Addition, subtraction                                           | Left to Right        |                   |
+| 8                       | <<, >>                                                       			| Bitwise shift left, shift right                                 | Left to Right        |                   |
+| 9                       | &                                                              			| Bitwise AND                                                     | Left to Right        |                   |
+| 10                      | ^                                                              			| Bitwise XOR                                                     | Left to Right        |                   |
+| 11                      | |                                                              			| Bitwise OR           											  | Left to Right     	 |
+| 12                      | <, <=, >, >=, ==, !=, is, is not, in, not in 							| Comparisons, identity, membership tests                         | Left to Right        |                   |
+| 13                      | not                                                            			| Logical NOT                                                     | Right to Left        |                   |
+| 14                      | and                                                            			| Logical AND                                                     | Left to Right        |                   |
+| 15                      | or                                                             			| Logical OR                                                      | Left to Right        |                   |
+| 16                      | if ... else ...                                                			| Conditional expression (ternary operator)                       | Right to Left        |                   |
+| 17                      | lambda                                                         			| Lambda expression                                               | Right to Left        |                   |
+| 18 (Lowest)             | =, +=, -=, =, /=, //=, %=, =, &=,=, ^=, >>=, <<=                        | Assignment operators | Right to Left |
+
+
+========Python Basics=========
+Logical operators 
+
+bitwise operators 
+Conditional 
+	if 
+	switch 
+	ternary 
+	
+Python loops 
+	while 
+	for 
+	
+
+Python functions 
+	Utility functions inside function 
+	
+Collections 
+	List 
+	Set 
+	Dict -- default dict
+	Tuple 
+from collections import defaultdict, deque, Counter, OrderedDict, namedtuple
+d = defaultdict(list)
+q = deque([1,2,3])
+c = Counter([1,1,2,3])
+	
+	
+Comprehensions 
+
+Generators 
+
+Decorators 
+
+
+
+
+Stack and Queue 
+Priority Queue Heap 
+
+	
+Lambda 
+
+Most commonly used Utility Functions in Python 
+	range 
+	sort 
+	zip 
+	 
+
+
+list(iterable)                | Convert to list                      |
+set(iterable)                 | Mutable set
+frozenset(iterable)           | Immutable set                        |
+tuple(iterable)               | Convert to tuple                     |
+
+map(func, iterable)           | Apply function to each element       |
+filter(func, iterable)        | Filter elements by condition
+
+max(iterable)                 | Maximum value                        |
+min(iterable)                 | Minimum value                        |
+sum(iterable)                 | Sum of elements
+all(iterable)                 | True if all elements are True        |
+any(iterable)                 | True if any element is True  
+
+next(iterator[, default])     | Get next element   
+reversed(seq)                 | Reverse iterator 
+sorted(iterable)              | Return sorted list    
+
+iter(obj)                     | Iterator object                      |
+len(obj)                      | Length of object                     |
+id(obj)                       | Object memory address
+type(obj)                     | Return type
+
+chr(i)                        | Character from Unicode code          |
+ord(c)                        | Unicode code from character 
+abs(x)                        | Absolute value                       |
+
+range(start, stop, step)      | Iterator over numbers 
+enumerate(iterable, start=0)  | Index + element pairs
+slice(start, stop, step)      | Slice object 
+zip(iterables)               | Combine iterables elementwise 
+
+=====Utility Functions=======
+| Function                      | Description                          |
+| ------------------------------| ------------------------------------ |
+| abs(x)                        | Absolute value                       |
+| all(iterable)                 | True if all elements are True        |
+| any(iterable)                 | True if any element is True          |
+| bin(x)                        | Convert int to binary string         |
+| bool(x)                       | Convert to boolean                   |
+| bytearray(), bytes()        	| Byte arrays                          |
+| chr(i)                        | Character from Unicode code          |
+| ord(c)                        | Unicode code from character          |
+| complex(a,b)                  | Complex number                       |
+| divmod(a,b)                   | Quotient and remainder (a//b, a%b) |
+| enumerate(iterable, start=0)  | Index + element pairs                |
+| eval(expr)                    | Evaluate string as expression        |
+| exec(code)                    | Execute code dynamically             |
+| filter(func, iterable)        | Filter elements by condition         |
+| float(x)                      | Convert to float                     |
+| format(value, spec)           | Format value as string               |
+| frozenset(iterable)           | Immutable set                        |
+| getattr(obj, name[, default]) | Get attribute                        |
+| hasattr(obj, name)            | Check if object has attribute        |
+| hash(obj)                     | Hash value                           |
+| hex(x)                        | Hex string                           |
+| id(obj)                       | Object memory address                |
+| input(prompt)                 | Read user input                      |
+| int(x, base=10)               | Convert to integer                   |
+| isinstance(obj, classinfo)    | Type check                           |
+| issubclass(class, classinfo)  | Subclass check                       |
+| iter(obj)                     | Iterator object                      |
+| len(obj)                      | Length of object                     |
+| list(iterable)                | Convert to list                      |
+| map(func, iterable)           | Apply function to each element       |
+| max(iterable)                 | Maximum value                        |
+| min(iterable)                 | Minimum value                        |
+| next(iterator[, default])     | Get next element                     |
+| oct(x)                        | Octal string                         |
+| open(file, mode)              | Open file                            |
+| ord(c)                        | Unicode code                         |
+| pow(x, y[, z])                | Power (mod optional)                 |
+| print(objects)               | Print to console                     |
+| range(start, stop, step)      | Iterator over numbers                |
+| repr(obj)                     | Official string representation       |
+| reversed(seq)                 | Reverse iterator                     |
+| round(number[, ndigits])      | Round number                         |
+| set(iterable)                 | Mutable set                          |
+| slice(start, stop, step)      | Slice object                         |
+| sorted(iterable)              | Return sorted list                   |
+| str(obj)                      | Convert to string                    |
+| sum(iterable)                 | Sum of elements                      |
+| tuple(iterable)               | Convert to tuple                     |
+| type(obj)                     | Return type                          |
+| zip(iterables)               | Combine iterables elementwise        |
+| exit()                        | Exit program                         |
+
+
+
+
+
+=============Conditional statements=========
+if-elif-else :
+	x = 10
+
+	if x > 0:
+		print("Positive")
+	elif x == 0:
+		print("Zero")
+	else:
+		print("Negative")
+
+--Ternary Operator--
+variable = value_if_true if condition else value_if_false
+
+x = 5
+result = "Even" if x % 2 == 0 else "Odd"
+print(result)  # Odd
+
+
+--Switch = match ---
+x = 2
+_ => default case 
+match x:
+    case 1:
+        print("One")
+    case 2:
+        print("Two")
+    case 3:
+        print("Three")
+    case _:
+        print("Other")
+
+
+
+===========Logical Operations========
+| Operator | Symbol | Description           |
+| -------- | ------ | --------------------- |
+| AND      | and  | True if both are True |
+| OR       | or   | True if any is True   |
+| NOT      | not  | Reverse Boolean value |
+
+
+Parentheses are recommended for clarity.
+
+Operators precedence: not > and > or
+
+
+| Operator / Method | Checks For                          | Returns      |
+| ----------------- | ----------------------------------- | ------------ |
+| x in y          | Membership in iterable              | True / False |
+| x not in y      | Not in iterable                     | True / False |
+| any(cond)       | Condition satisfied for any element | True / False |
+| set membership  | Fast membership check               | True / False |
+
+Key point: in checks elements of a container — for dictionaries, it checks keys by default, not values.
+
+
+
+========Bitwise Operators=====
+| Operator | Description  | Example | Result |   |
+| -------- | ------------ | ------- | ------ | - |
+| &        | AND          | 5 & 3   | 1      |   |
+| |        | OR           | 5 | 3   | 7      |
+| ^        | XOR          | 5 ^ 3   | 6      |   |
+| ~        | NOT (invert) | ~5      | -6     |   |
+| <<       | Left shift   | 5 << 1  | 10     |   |
+| >>       | Right shift  | 5 >> 1  | 2      |   |
+
+
+a = 12  # 1100
+b = 5   # 0101
+
+print(a & b)   # 4   → 0100
+print(a | b)   # 13  → 1101
+print(a ^ b)   # 9   → 1001
+print(~a)      # -13
+print(a << 2)  # 48  → 110000
+print(a >> 2)  # 3   → 0011
+
+
+
+
+======Loops in Python=======
+| Loop Type  | Syntax               | When to Use                          |
+| ---------- | -------------------- | ------------------------------------ |
+| for      	 | for x in iterable:   | Iterate over sequences or ranges     |
+| while      | while condition:     | Repeat until condition becomes False |
+| break      | Inside loop          | Exit loop immediately                |
+| continue   | Inside loop          | Skip current iteration               |
+| else       | After loop           | Runs if loop finishes normally       |
+
+
+
+
+
+============Collections in Python===========
+
+| Term          | Meaning                                                                                                           | Examples                                    |
+| ------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Mutable   	| Object can be changed after creation. You can modify, add, or remove elements.                                	| list, dict, set, bytearray, deque |
+| Immutable 	| Object cannot be changed after creation. Any operation that seems to change it actually creates a new object. 	| tuple, str, frozenset, int, float |
+
+
+
+
+Mutable: Can modify in-place (list, dict, set).
+
+Immutable: Cannot modify, creates new object (tuple, str, frozenset).
+
+Choose based on whether you want safe, hashable objects or flexible, changeable objects.
+
+
+Why It Matters
+	Hashable objects (like tuple, frozenset) can be used as dictionary keys or set elements.
+	Mutable objects cannot be dictionary keys because their content may change, breaking the hash.
+	Choosing mutable vs immutable affects safety, performance, and behavior of your code.
+	
+	
+=======List========
+List Properties
+	Mutable: Can change elements after creation.
+	Ordered: Maintains element order.
+	Heterogeneous: Can store different data types.
+	Indexed: Access via integer indices.
+	Supports nesting: Can store lists inside lists.
+	Dynamic size: Can grow or shrink dynamically
+	
+---Operations---
+append, extend, insert, remove, pop, sort, reverse, count, index, copy, clear
+
+| Method                          | Description                      	| Example                  |
+| ------------------------------- | -------------------------------- 	| ------------------------ |
+| append(x)                     | Add an element at the end        		| lst.append(5)          |
+| extend(iterable)              | Add multiple elements            		| lst.extend([6,7])      |
+| insert(i, x)                  | Insert element at index i      		| lst.insert(1, 10)      |
+| remove(x)                     | Remove first occurrence of x   		| lst.remove(3)          |
+| pop(i=-1)                     | Remove and return element at i 		| lst.pop()              |
+| clear()                       | Remove all elements            	 	| lst.clear()            |
+| index(x[, start[, end]])      | Return first index of x        		| lst.index(10)          |
+| count(x)                      | Count occurrences of x         		| lst.count(2)           |
+| sort(key=None, reverse=False) | Sort list in place               		| lst.sort(reverse=True) |
+| reverse()                     | Reverse list in place            		| lst.reverse()          |
+| copy()                        | Return shallow copy              		| lst2 = lst.copy()      |
+
+
+
+---Comprehensions---
+| Pattern                                            | Example                                           | Result                              |
+| -------------------------------------------------- | ------------------------------------------------- | ----------------------------------- |
+| [expr for x in iterable]                         | [x2 for x in range(5)]                        | [0,1,4,9,16]                      |
+| [expr for x in iterable if condition]            | [x for x in range(5) if x%2==0]                 | [0,2,4]                           |
+| [a if cond else b for x in iterable]             | ["even" if x%2==0 else "odd" for x in range(5)] | ['odd','even','odd','even','odd'] |
+| [expr for x in iter1 for y in iter2]             | [(x,y) for x in [1,2] for y in [3,4]]           | [(1,3),(1,4),(2,3),(2,4)]         |
+| [[expr for row in matrix] for col in range(...)] | Matrix transpose                                  | [[1,4],[2,5],[3,6]]               |
+
+
+[expression for item in iterable]
+	# Square numbers from 0 to 4
+	squares = [x2 for x in range(5)]
+	print(squares)  # [0, 1, 4, 9, 16]
+
+
+[expression for item in iterable if condition]
+	# Even numbers squared
+	even_squares = [x2 for x in range(10) if x % 2 == 0]
+	print(even_squares)  # [0, 4, 16, 36, 64]
+
+[expression_if_true if condition else expression_if_false for item in iterable]
+	nums = [1,2,3,4,5]
+	labels = ["even" if x % 2 == 0 else "odd" for x in nums]
+	print(labels)  # ['odd', 'even', 'odd', 'even', 'odd']
+
+[expression for item1 in iterable1 for item2 in iterable2 ...]
+	# Cartesian product
+	pairs = [(x, y) for x in [1,2] for y in [3,4]]
+	print(pairs)  # [(1,3),(1,4),(2,3),(2,4)]
+
+	# Pairs where elements are not equal
+	filtered_pairs = [(x, y) for x in [1,2,3] for y in [3,4,5] if x != y]
+	print(filtered_pairs)
+	# [(1,3),(1,4),(1,5),(2,3),(2,4),(2,5),(3,4),(3,5)]
+	
+	matrix = [[1,2,3],[4,5,6]]
+	flat = [num for row in matrix for num in row]
+	print(flat)  # [1,2,3,4,5,6]
+
+	def square(x): return xx
+	lst = [square(x) for x in range(5)]
+	print(lst)  # [0,1,4,9,16]
+	
+	fruits = ['apple', 'banana', 'cherry']
+	indexed = [f"{i}:{fruit}" for i, fruit in enumerate(fruits)]
+	print(indexed)  # ['0:apple', '1:banana', '2:cherry']
+	
+	matrix = [[1,2,3],[4,5,6]]
+	transpose = [[row[i] for row in matrix] for i in range(3)] # for each i in outer inner will loop , like a nexted loop 
+	print(transpose)  # [[1,4],[2,5],[3,6]]
+	
+
+
+
+
+
+=====Set======
+Properties of Python Sets
+	Unordered: Elements do not have a defined order; no indexing.
+	Unique elements: Duplicate values are automatically removed.
+	Mutable: You can add or remove elements.
+	Heterogeneous: Can contain different data types (numbers, strings, tuples).
+	Not hashable (for nested sets): Sets cannot contain other sets or mutable types as elements.
+	Iterable: You can loop over elements using for.
+
+| Method             | Description                                        | Example           |
+| ------------------ | -------------------------------------------------- | ----------------- |
+| add(x)           | Add element x                                    | s.add(4)        |
+| update(iterable) | Add multiple elements                              | s.update([5,6]) |
+| remove(x)        | Remove element x (raises KeyError if not exists) | s.remove(2)     |
+| discard(x)       | Remove element x (no error if not exists)        | s.discard(7)    |
+| pop()            | Remove and return an arbitrary element             | s.pop()         |
+| clear()          | Remove all elements                                | s.clear()       |
+| copy()           | Return shallow copy                                | s2 = s.copy()   |
+
+
+print(a | b)
+print(a.union(b))
+
+
+print(a & b)
+print(a.intersection(b))
+
+
+print(a - b)
+print(a.difference(b))
+
+
+print(a ^ b) [ (a-b) union (b-a)  | (a union b) - (a intersection b) ]
+print(a.symmetric_difference(b))
+
+| Operation       | Syntax                        | Description                                             | Example |
+| --------------- | ----------------------------- | ------------------------------------------------------- | ------- |
+| Subset          | a <= b or a.issubset(b)   | True if all elements of a are in b                  | False |
+| Proper Subset   | a < b                       | True if all elements of a are in b and a != b | False |
+| Superset        | a >= b or a.issuperset(b) | True if all elements of b are in a                  | False |
+| Proper Superset | a > b                       | True if all elements of b are in a and a != b | False |
+
+
+| Operation                     | Symbol | Method                   | Description                                |                                    |
+| ----------------------------- | ------ | ------------------------ | ------------------------------------------ | ---------------------------------- |
+| Union                         | |      | union                    | union()                                  | All unique elements from both sets |
+| Intersection                  | &    | intersection()         | Elements common to both sets               |                                    |
+| Difference                    | -    | difference()           | Elements in first set not in second        |                                    |
+| Symmetric difference          | ^    | symmetric_difference() | Elements in either set but not both        |                                    |
+| Subset                        | <=   | issubset()             | All elements of first set are in second    |                                    |
+| Proper Subset                 | <    | —                        | Subset and not equal                       |                                    |
+| Superset                      | >=   | issuperset()           | First set contains all elements of second  |                                    |
+| Proper Superset               | >    | —                        | Superset and not equal                     |                                    |
+| Disjoint                      | —      | isdisjoint()           | True if sets share no elements             |                                    |
+| In-place Union                | |=    | |=                       | —                                          | Update first set with union        |
+| In-place Intersection         | &=   | —                        | Update first set with intersection         |                                    |
+| In-place Difference           | -=   | —                        | Update first set with difference           |                                    |
+| In-place Symmetric Difference | ^=   | —                        | Update first set with symmetric difference |                                    |
+
+
+
+
+
+
+=====Dict====
+
+Dictionary Properties
+
+	Mutable: You can change, add, or remove elements.
+	Unordered (Python < 3.7) / Insertion-ordered (Python ≥ 3.7): Elements maintain insertion order.
+	Key-Value pairs: Each key maps to a value.
+	Keys are unique: No duplicate keys allowed.
+	Keys must be hashable: e.g., numbers, strings, tuples.
+	Values can be any type: Mutable or immutable, including lists, dicts, etc.
+
+
+| Method                       | Description                                              | Example                         |
+| ---------------------------- | -------------------------------------------------------- | ------------------------------- |
+| d.keys()                   | Returns view of keys                                     | dict_keys(['a','b'])          |
+| d.values()                 | Returns view of values                                   | dict_values([1,2])            |
+| d.items()                  | Returns view of key-value pairs                          | dict_items([('a',1),('b',2)]) |
+| d.get(key[, default])      | Returns value for key or default                         | d.get('x',0)                  |
+| d.pop(key[, default])      | Remove key and return value                              | d.pop('a')                    |
+| d.popitem()                | Remove last inserted key-value                           | d.popitem()                   |
+| d.update(other_dict)       | Update dict with another dict                            | d.update({'x':10})            |
+| d.clear()                  | Remove all items                                         | d.clear()                     |
+| d.copy()                   | Shallow copy of dictionary                               | d2 = d.copy()                 |
+| d.setdefault(key, default) | Return value if key exists, else insert key with default | d.setdefault('k',0)           |
+| d.fromkeys(seq[,value])    | Create new dict with keys from seq and value             | dict.fromkeys(['a','b'],0)    |
+
+
+# Square numbers as key-value pairs
+squares = {x: x2 for x in range(5)}
+print(squares)  # {0:0,1:1,2:4,3:9,4:16}
+
+
+# Only even numbers
+even_squares = {x: x2 for x in range(10) if x % 2 == 0}
+print(even_squares)  # {0:0,2:4,4:16,6:36,8:64}
+
+
+prices = {"apple": 5, "banana": 3, "cherry": 7}
+new_prices = {k: v1.1 for k, v in prices.items()}
+print(new_prices)  # {'apple':5.5,'banana':3.3,'cherry':7.7}
+
+
+d = {'a':1,'b':2}
+swapped = {v:k for k,v in d.items()}
+print(swapped)  # {1:'a', 2:'b'}
+
+
+matrix = [[1,2,3],[4,5,6]]
+d = {i:{j:matrix[i][j] for j in range(len(matrix[0]))} for i in range(len(matrix))}
+print(d)
+# {0:{0:1,1:2,2:3},1:{0:4,1:5,2:6}}
+
+
+====Tuple====
+
+Tuple Properties
+	Immutable: Cannot change, add, or remove elements after creation.
+	Ordered: Elements maintain the insertion order.
+	Indexed: Supports indexing and slicing.
+	Allows duplicates: Same element can appear multiple times.
+	Heterogeneous: Can store mixed data types (numbers, strings, lists, etc.).
+	Iterable: Can loop over elements using for.
+	Hashable if elements are hashable: Can be used as dictionary keys.
+
+
+
+| Method                   | Description                | Example                     |
+| ------------------------ | -------------------------- | --------------------------- |
+| count(x)               | Counts occurrences of x    | (1,2,2).count(2) → 2      |
+| index(x[,start[,end]]) | Returns first index of x   | (1,2,3,2).index(2) → 1    |
+| len(t)                 | Returns number of elements | len((1,2,3)) → 3          |
+| min(t)                 | Minimum element            | min((3,1,2)) → 1          |
+| max(t)                 | Maximum element            | max((3,1,2)) → 3          |
+| sum(t)                 | Sum of numeric elements    | sum((1,2,3)) → 6          |
+| sorted(t)              | Returns sorted list        | sorted((3,1,2)) → [1,2,3] |
+| tuple(iterable)        | Convert iterable to tuple  | tuple([1,2,3]) → (1,2,3)  |
+
+
+
+Tuple Operations
+
+	Concatenation: (1,2) + (3,4) → (1,2,3,4)
+	Repetition: (1,2)3 → (1,2,1,2,1,2)
+	Membership: 2 in (1,2,3) → True
+	Iteration: for x in (1,2,3)
+
+
+t = tuple(x2 for x in range(5))
+print(t)  # (0, 1, 4, 9, 16)
+
+
+--Nested Tuples---
+nested = ((1,2), (3,4))
+print(nested[0])   # (1,2)
+print(nested[0][1])# 2
+
+
+---Slicing Tuples---
+t = (0,1,2,3,4)
+print(t[1:4])  # (1,2,3)
+print(t[:3])   # (0,1,2)
+print(t[::2])  # (0,2,4)
+
+
+
+
+===========Special Collections=====
+| Collection  | Type           | Key Feature                               |
+| ------------| -------------- | ----------------------------------------- |
+| Counter     | dict subclass  | Counts occurrences of items               |
+| defaultdict | dict subclass  | Default factory for missing keys          |
+| OrderedDict | dict subclass  | Remembers insertion order, move_to_end    |
+| deque       | sequence       | Fast append/pop from both ends            |
+| namedtuple  | tuple subclass | Immutable, fields can be accessed by name |
+| ChainMap    | mapping        | Groups multiple dicts into a single view  |
+
+
+
+=====deque====
+	deque is a double-ended queue.
+	Allows O(1) insertion and deletion from both ends.
+	Part of collections module.
+	More efficient than list for queue and stack operations.
+	
+	
+from collections import deque
+
+dq = deque([1,2,3])
+print(dq)  # deque([1,2,3])
+
+
+--creating---
+from collections import deque
+
+# From list
+dq1 = deque([1,2,3])
+
+# From string
+dq2 = deque("hello")  # deque(['h','e','l','l','o'])
+
+# Empty deque
+dq3 = deque()
+
+# Specify max length
+dq4 = deque(maxlen=5)
+
+
+| Method                      | Description                                                | Example                 |
+| --------------------------- | ---------------------------------------------------------- | ----------------------- |
+| append(x)                 | Add element right end                                  | dq.append(4)          |
+| appendleft(x)             | Add element left end                                   | dq.appendleft(0)      |
+| pop()                     | Remove and return element from right end               | dq.pop()              |
+| popleft()                 | Remove and return element from left end                | dq.popleft()          |
+| extend(iterable)          | Add multiple elements to right end                     | dq.extend([4,5])      |
+| extendleft(iterable)      | Add multiple elements to left end (adds in reverse)    | dq.extendleft([0,-1]) |
+| remove(x)                 | Remove first occurrence of x                             | dq.remove(2)          |
+| count(x)                  | Count occurrences of x                                   | dq.count(2)           |
+| rotate(n=1)               | Rotate elements n steps to the right (negative → left) | dq.rotate(1)          |
+| reverse()                 | Reverse elements in-place                                  | dq.reverse()          |
+| clear()                   | Remove all elements                                        | dq.clear()            |
+| copy()                    | Return shallow copy                                        | dq2 = dq.copy()       |
+| index(x[, start[, stop]]) | Return index of first occurrence                           | dq.index(3)           |
+| insert(i, x)              | Insert x at index i                                    | dq.insert(1, 10)      |
+
+
+==deque as stack
+stack = deque()
+stack.append(1)
+stack.append(2)
+stack.append(3)
+print(stack.pop())  # 3
+
+
+==deque as queue 
+queue = deque()
+queue.append(1)      # enqueue
+queue.append(2)
+queue.append(3)
+print(queue.popleft())  # 1 (dequeue)
+
+
+
+dq = deque([1,2,3,4,5])
+dq.rotate(2)    # rotate right 2 steps → deque([4,5,1,2,3])
+dq.rotate(-1)   # rotate left 1 step → deque([5,1,2,3,4])
+
+
+
+=====default dict====
+| Feature                | dict            | defaultdict                              |
+| ---------------------- | ----------------- | ------------------------------------------ |
+| Missing key access     | Raises KeyError | Automatically creates default value        |
+| Initialization         | d = {}          | dd = defaultdict(factory)                |
+| Requires manual check  | ✅                 | ❌                                          |
+| Factory function       | ❌                 | ✅ (int, list, set, or custom lambda) |
+| Automatic key creation | ❌                 | ✅                                          |
+
+
+
+============Heap===================
+a priority queue is supported primarily through the heapq module, which implements a min-heap.
+
+
+pq = [5, 2, 7, 1, 3]
+
+
+heapq.heapify(pq)  # transforms list into min-heap in-place
+print(pq)  # [1,2,7,5,3]  (heap order, not sorted)
+
+heapq.heappush(pq, 0)  # push 0 into heap
+print(pq)  # [0,1,7,5,3,2]
+
+
+min_elem = heapq.heappop(pq)  # removes and returns smallest
+print(min_elem)  # 0
+print(pq)        # [1,2,7,5,3]
+
+
+
+
+smallest = heapq.heappushpop(pq, 4)
+print(smallest)  # 1 (popped)
+print(pq)        # [2,4,7,5,3]
+
+
+new_min = heapq.heapreplace(pq, 0)
+print(new_min)  # 2 (popped)
+print(pq)       # [0,4,7,5,3]
+
+
+nums = [5,1,8,3,2]
+print(heapq.nsmallest(3, nums))  # [1,2,3]
+print(heapq.nlargest(2, nums))   # [8,5]
+
+
+max_heap = []
+heapq.heappush(max_heap, -5)
+heapq.heappush(max_heap, -1)
+heapq.heappush(max_heap, -3)
+
+max_val = -heapq.heappop(max_heap)
+print(max_val)  # 5
+
+
+
+| Operation              | Function                                          | Complexity |
+| ---------------------- | ------------------------------------------------- | ---------- |
+| Create heap            | heapify(list)                                   | O(n)       |
+| Insert                 | heappush(heap, x)                               | O(log n)   |
+| Pop min                | heappop(heap)                                   | O(log n)   |
+| Push-pop               | heappushpop(heap, x)                            | O(log n)   |
+| Pop-push               | heapreplace(heap, x)                            | O(log n)   |
+| Get n smallest/largest | nsmallest(n, iterable), nlargest(n, iterable) | O(n log k) |
+
+
+
+
+==========Range====
+Creates a sequence of numbers.
+
+Syntax Variations:
+	range(stop)
+	range(start, stop)
+	range(start, stop, step)
+	
+# 0 to 4
+for i in range(5):
+    print(i)  # 0 1 2 3 4
+
+# 2 to 6
+for i in range(2, 7):
+    print(i)  # 2 3 4 5 6
+
+# 1 to 10, step 2
+for i in range(1, 11, 2):
+    print(i)  # 1 3 5 7 9
+
+# Negative step
+for i in range(5, 0, -1):
+    print(i)  # 5 4 3 2 1
+
+
+| Function                   | Syntax          | Lower Bound | Upper Bound | Step          | Example         | Output    |
+| -------------------------- | --------------- | ----------- | ----------- | ------------- | --------------- | --------- |
+| range(stop)              | range(5)      | Included    | Excluded    | +1 by default | range(5)      | 0,1,2,3,4 |
+| range(start, stop)       | range(2,7)    | Included    | Excluded    | +1 default    | range(2,7)    | 2,3,4,5,6 |
+| range(start, stop, step) | range(1,10,2) | Included    | Excluded    | 2             | range(1,10,2) | 1,3,5,7,9 |
+| range(start, stop, step) | range(5,0,-1) | Included    | Excluded    | -1            | range(5,0,-1) | 5,4,3,2,1 |
+
+
+
+
+======Slice====
+slice(start, stop, step) [ start icluded , stop excluded ]
+
+index = len(arr) + negative_index
+
+Key Points
+
+Negative index = len(sequence) + index
+
+Step positive: slice moves left → right
+
+Step negative: slice moves right → left
+
+Start included, stop excluded (after conversion to positive index)
+
+arr = [0,1,2,3,4,5,6]
+
+# Slice object
+s = slice(1, 5, 2)
+print(arr[s])  # [1, 3]
+
+# Direct slicing
+print(arr[1:5:2])  # [1, 3]
+
+# Negative indexing
+print(arr[-5:-1])  # [2, 3, 4, 5]
+
+# Step negative (reverse)
+print(arr[::-1])   # [6,5,4,3,2,1,0]
+
+
+
+arr = ['a','b','c','d','e']
+print(arr[-1])  # 'e'
+print(arr[-2])  # 'd'
+print(arr[-5])  # 'a'
+
+
+
+| Function                   | Syntax         	| Lower Bound | Upper Bound | Step       | Example             | Output                             |
+| -------------------------- | -------------- 	| ----------- | ----------- | ---------- | ------------------- | ---------------------------------- |
+| slice(start, stop)       	 | slice(1,5)   	| Included    | Excluded    | +1 default | arr[slice(1,5)]     | [arr[1], arr[2], arr[3], arr[4]] 	|
+| slice(start, stop, step) 	 | slice(1,6,2) 	| Included    | Excluded    | 2          | arr[slice(1,6,2)]   | [arr[1], arr[3], arr[5]]         	|
+| slice(None, None, -1)    	 | [::-1]       	| Last index  | First index | -1         | arr[::-1]           | Reversed array                     	|
+
+
+
+
+=====Enumerate====
+Iterating with index 
+enumerate(iterable, start=0)
+
+lst = ['a','b','c']
+
+for idx, val in enumerate(lst):
+    print(idx, val)
+# 0 a
+# 1 b
+# 2 c
+
+# Start index from 1
+for idx, val in enumerate(lst, 1):
+    print(idx, val)
+# 1 a
+# 2 b
+# 3 c
+
+# Convert to list of tuples
+print(list(enumerate(lst)))  # [(0,'a'), (1,'b'), (2,'c')]
+
+
+======Zip====
+Combine multiple iterables element-wise into tuples.
+
+zip(iter1, iter2, ..., iterN)
+
+a = [1,2,3]
+b = ['x','y','z']
+
+zipped = zip(a, b)
+print(list(zipped))  # [(1,'x'),(2,'y'),(3,'z')]
+
+# With unequal lengths → stops at shortest
+a = [1,2,3,4]
+b = ['p','q']
+print(list(zip(a,b)))  # [(1,'p'),(2,'q')]
+
+# Unzipping
+pairs = [(1,'x'),(2,'y')]
+nums, letters = zip(pairs)
+print(nums)    # (1,2)
+print(letters) # ('x','y')
+
+
+
+
+
+==============Bitwise Operators and Set Operators distingushed =====
+So How to Distinguish Them?
+✔ Look at the operands
+
+	If both sides are ints → bitwise OR
+
+	If both are sets → set union
+
+	If both are dicts → dict merge
+
+	If inside type hint context (def f(x: A|B): or x: A|B) → union type
+
+	If inside code like dp[i][j] |= something, it's bitwise OR assignment.
+	
+	
+==============String Operations=====================
+| Operation                     | Description                                   | Example                                      | Corner Cases                                      |
+|------------------------------|-----------------------------------------------|----------------------------------------------|---------------------------------------------------|
+| len(s)                       | Length of string                              | len("hi") → 2                                | len("") = 0; spaces counted                       |
+| s[i], s[-1]                  | Access characters using index                 | "hello"[0] → 'h'                              | Out-of-range index → error                        |
+| s[a:b:c]                     | Slicing substring                             | "hello"[1:4] → "ell"                          | Out-of-range → ""; step=0 → error                 |
+| for ch in s                  | Iterate through characters                    | for c in "hi": print(c)                      | Empty string → loop skips                         |
+| s.isalpha()                  | Check if all letters                          | "abc".isalpha() → True                        | "" → False                                        |
+| s.isdigit()                  | Check digits only                             | "123".isdigit() → True                        | Works only for 0–9                                |
+| s.isalnum()                  | Check letters or digits                       | "a1".isalnum() → True                         | "" → False                                        |
+| s.islower() / isupper()      | All lowercase / uppercase                     | "hi".islower()                               | Mixed case → False                                |
+| s.isspace()                  | Only whitespace                               | "   ".isspace()                               | "" → False                                        |
+| s.find(x)                    | Find substring index                          | "hello".find("ll") → 2                        | Not found → -1                                    |
+| s.index(x)                   | Like find but raises error                    | "hi".index("i") → 1                           | Not found → ValueError                            |
+| s.count(x)                   | Count occurrences                             | "banana".count("a") → 3                       | "" substring → len(s)+1                           |
+| s.replace(a, b, n?)          | Replace substring                             | "aa".replace("a","b",1) → "ba"                | If missing → unchanged                             |
+| s.split(sep)                 | Split string into list                        | "a,b".split(",") → ['a','b']                  | No sep → return whole string                      |
+| sep.join(list)               | Join list of strings                          | ",".join(["a","b"]) → "a,b"                   | Only strings allowed                              |
+| s.upper(), s.lower()         | Change case                                   | "hi".upper() → "HI"                           | Unicode may vary                                  |
+| s.strip() / lstrip / rstrip  | Remove whitespace                             | " hi ".strip() → "hi"                         | Removes tabs/newlines too                         |
+| s.startswith(x)              | Check prefix                                  | "hello".startswith("he") → True               | Range allowed: s.startswith("h",0,1)              |
+| s.endswith(x)                | Check suffix                                  | "hello".endswith("lo") → True                 | Case-sensitive                                     |
+| s1 < s2                      | Lexicographic compare                         | "apple" < "banana" → True                     | Case impacts result                               |
+| list(s)                      | Convert to list of characters                 | list("hi") → ['h','i']                        | Works for any string                              |
+| s * n                        | Repeat string                                 | "ha"*3 → "hahaha"                              | n=0 → ""                                          |
+| x in s                       | Substring check                               | "ell" in "hello" → True                       | Case-sensitive                                     |
+
+
+
+
+=============Immutable and Mutable Operations==============
+✔ The common immutable-style list operations:
+
+	path + [x]
+	a + b
+	a[:]
+	slicing
+	comprehensions
+	sorted(a)
+
+✔ Common mutable operations modify the object in-place:
+
+	append, extend, insert
+	sort(), reverse()
+	.add(), .remove(), .update()
+	dict[key] = value
+
+1. LIST (list)
+| Operation          | Example            | Mutable / Immutable | Explanation                 |
+| ------------------ | ------------------ | ------------------- | --------------------------- |
+| Index assignment   | `a[2] = 10`        | **Mutable**         | Modifies list item in-place |
+| Append             | `a.append(x)`      | **Mutable**         | Changes original list       |
+| Extend             | `a.extend(b)`      | **Mutable**         | Adds multiple elements      |
+| Insert             | `a.insert(i, x)`   | **Mutable**         | Modifies list               |
+| Remove             | `a.remove(x)`      | **Mutable**         | Mutates list                |
+| Pop                | `a.pop()`          | **Mutable**         | Removes last element        |
+| Sort               | `a.sort()`         | **Mutable**         | Sorts in-place              |
+| Reverse            | `a.reverse()`      | **Mutable**         | Reverses list in-place      |
+| Slicing assignment | `a[1:3] = [10,11]` | **Mutable**         | Modifies list               |
+| List comprehension | `[x for x in a]`   | **Immutable**       | Creates new list            |
+| Concatenation      | `a + b`            | **Immutable**       | Produces new list           |
+| Repetition         | `a * 3`            | **Immutable**       | Produces new list           |
+| Slicing            | `a[1:3]`           | **Immutable**       | Returns a copy              |
+
+
+2. SET (set)
+| Operation                 | Example                     | Mutable / Immutable | Explanation              |              |
+| ------------------------- | --------------------------- | ------------------- | ------------------------ | ------------ |
+| Add                       | `s.add(x)`                  | **Mutable**         | Adds element             |              |
+| Remove                    | `s.remove(x)`               | **Mutable**         | Removes element          |              |
+| Discard                   | `s.discard(x)`              | **Mutable**         | Removes safely           |              |
+| Pop                       | `s.pop()`                   | **Mutable**         | Removes a random element |              |
+| Clear                     | `s.clear()`                 | **Mutable**         | Empties set              |              |
+| Union (in-place)          | `s|= t`                     | **Mutable**         | Modifies set             |
+| Intersection (in-place)   | `s &= t`                    | **Mutable**         | Modifies set             |              |
+| Difference (in-place)     | `s -= t`                    | **Mutable**         | Modifies set             |              |
+| Symmetric diff (in-place) | `s ^= t`                    | **Mutable**         | Modifies set             |              |
+| Union                     | `s.union(t)`                | **Immutable**       | New set returned         |              |
+| Intersection              | `s.intersection(t)`         | **Immutable**       | New set returned         |              |
+| Difference                | `s.difference(t)`           | **Immutable**       | New set returned         |              |
+| Symmetric difference      | `s.symmetric_difference(t)` | **Immutable**       | New set returned         |              |
+
+
+3. DICTIONARY (dict)
+| Operation          | Example              | Mutable / Immutable | Explanation          |               |                  |
+| ------------------ | -------------------- | ------------------- | -------------------- | ------------- | ---------------- |
+| Insert / Update    | `d[key] = value`     | **Mutable**         | Changes dict         |               |                  |
+| Delete             | `del d[key]`         | **Mutable**         | Removes key          |               |                  |
+| Pop                | `d.pop(key)`         | **Mutable**         | Removes & returns    |               |                  |
+| Popitem            | `d.popitem()`        | **Mutable**         | Removes last pair    |               |                  |
+| Clear              | `d.clear()`          | **Mutable**         | Empties dict         |               |                  |
+| Update             | `d.update(other)`    | **Mutable**         | Merges in-place      |               |                  |
+| Setdefault         | `d.setdefault(k, v)` | **Mutable**         | Adds key if missing  |               |                  |
+| Copy               | `d.copy()`           | **Immutable**       | Creates shallow copy |               |                  |
+| Dict comprehension | `{k:v for ...}`      | **Immutable**       | New dict             |               |                  |
+
+dict3 = dict1 | dict2 [Immutable merge] 
+d1|=d2 [Mutable merge , mutates d1] 
+ 
+
+
+
+==================Python Collections Module==================
+Class           | Purpose                                                                 | Important Methods / Features
+------------------------------------------------------------------------------------------------------------
+namedtuple      | Factory for creating tuple subclasses with named fields.               | _fields, _replace(**kwargs), _asdict(), _make(iterable)
+deque           | Double-ended queue with O(1) append/pop from both ends.                | append(x), appendleft(x), pop(), popleft(), extend(iterable), extendleft(iterable), rotate(n)
+Counter         | Counts hashable objects; returns dict-like mapping element → count.    | most_common(n), elements(), update(iterable), arithmetic (+, -, &, |)
+OrderedDict     | Dictionary that preserves insertion order.                              | move_to_end(key, last=True), popitem(last=True)
+defaultdict     | Dict that automatically initializes missing keys using default factory. | default_factory, behaves like normal dict (e.g., d[key].append(val))
+ChainMap        | Combines multiple dicts/mappings into a single view.                   | maps, new_child(), parents
+

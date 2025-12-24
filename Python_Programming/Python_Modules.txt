@@ -1,0 +1,483 @@
+============Python Modules Internals=====
+
+typedef struct {
+    PyObject_HEAD
+
+    int co_argcount;        // positional args
+    int co_posonlyargcount;
+    int co_kwonlyargcount;
+    int co_nlocals;         // local variables count
+    int co_stacksize;       // required stack size
+    int co_flags;           // generator, coroutine, etc.
+
+    PyObject *co_code;      // BYTECODE (bytes object)
+    PyObject *co_consts;    // literals used (numbers, strings, code objects)
+    PyObject *co_names;     // global names used
+    PyObject *co_varnames;  // local variable names
+    PyObject *co_freevars;  // closure vars
+    PyObject *co_cellvars;  // vars shared with inner functions
+
+    PyObject *co_filename;  // source filename
+    PyObject *co_name;      // function name
+    int co_firstlineno;
+    PyObject *co_lnotab;    // line number mapping
+} PyCodeObject;
+
+
+What uses PyCodeObject?
+	✔ Python functions
+	✔ Lambdas
+	✔ Class bodies
+	✔ Modules (.py files)
+	✔ Generator functions
+	✔ Async functions
+	
+
+Where is PyCodeObject stored?
+	• Function object: func.__code__
+	• Module object: module.__dict__['__loader__'] → code
+	• Nested functions: inside co_consts
+	• Cached in .pyc files (marshaled)
+	
+How is PyCodeObject executed?
+
+	PyCodeObject
+	   ↓
+	PyFrameObject (runtime execution context)
+	   ↓
+	Python Virtual Machine (eval loop)
+
+
+Execution flow:
+	code → frame → eval loop → bytecode instructions
+
+
+================================================================
+2️ PyCFunctionObject
+================================================================
+Represents a BUILT-IN FUNCTION implemented in C
+NO Python bytecode
+NO PyCodeObject
+
+
+typedef struct {
+    PyObject_HEAD
+
+    PyMethodDef *m_ml;   // C function pointer + metadata
+    PyObject *m_self;   // bound object (for methods)
+    PyObject *m_module; // owning module
+} PyCFunctionObject;
+
+
+
+typedef struct {
+    const char *ml_name;
+    PyCFunction ml_meth;   // actual C function pointer
+    int ml_flags;         // calling convention
+    const char *ml_doc;
+} PyMethodDef;
+
+
+What uses PyCFunctionObject?
+	✔ Built-in modules (sys, math, time)
+	✔ Built-in functions (len, print)
+	✔ Built-in methods (list.append)
+	✔ C-extension modules
+	
+Where is PyCFunctionObject stored?
+	• Module namespace: module.__dict__
+	• Type method table: list.__dict__['append']
+	• sys.builtin_module_names
+
+Internally:
+	len → PyCFunctionObject → C function pointer
+	
+How is PyCFunctionObject executed?
+
+	Python VM sees a CALL opcode
+	↓
+	Detects PyCFunctionObject
+	↓
+	Direct C function call
+	↓
+	Return PyObject*
+	
+================================================================
+3️ KEY DIFFERENCES (INTERVIEW CRITICAL)
+================================================================
+| Aspect       | PyCodeObject       | PyCFunctionObject       |
+| ------------ | ------------------ | ----------------------- |
+| Represents   | Python bytecode    | C function              |
+| Used by      | Python code        | Built-in / C extensions |
+| Has bytecode | ✔ Yes              | ❌ No                    |
+| Executed by  | Python VM          | Direct C call           |
+| Stored in    | Function, module   | Method table, module    |
+| Performance  | Slower             | Faster                  |
+| Inspectable  | ✔ Yes (`__code__`) | ❌ No                    |
+
+
+
+Built-in modules
+	sys, math, time
+	→ PyCFunctionObject
+
+Standard library (.py)
+	json, collections, asyncio
+	→ PyCodeObject
+
+Mixed modules
+	math.py + _math.c
+	→ BOTH
+	
+Importing Python module
+	1. Read .py
+	2. Compile → PyCodeObject
+	3. Create module object
+	4. Execute code object in module namespace
+	
+Importing C-extension module
+	1. Load .so / .pyd
+	2. Register PyMethodDef table
+	3. Create PyCFunctionObjects
+	
+================================================================
+6️ WHY PyCodeObject ≠ PyFunctionObject
+================================================================
+	csharp
+	Copy code
+	PyCodeObject  → static, immutable, reusable
+	PyFunctionObject → runtime object with globals, defaults, closures
+	
+	
+============================
+Built-in modules:
+	- Already inside Python
+	- Faster
+	- No installation
+
+C extension modules:
+	- Use CPython C API
+	- Extremely fast
+	- Used for math, crypto, system calls
+
+Pure Python modules:
+	- Easier to read and modify
+	- Slightly slower
+	- Used for structure and abstraction
+
+
+How Python Decides What Type a Module Is
+
+When you write: import module_name
+
+Python checks:
+	1. sys.builtin_module_names
+	2. Frozen modules
+	3. Standard library paths
+	4. Site-packages (pip)
+
+Type                      | Written In | Compiled | Speed     | Example
+---------------------------------------------------------------------------
+Core Built-in              | C          | Yes      | Fastest   | sys
+Built-in C Extension       | C          | Yes      | Very Fast | math
+Standard Library (Python)  | Python     | No       | Moderate  | os
+Mixed Modules              | Python + C | Partial  | Fast      | json
+Third-Party Modules        | Python/C   | Optional | Varies    | numpy
+
+
+import sys
+import math
+import os
+
+
+Python Modules
+│
+├── Built-in Modules
+│   ├── Core Built-in (Interpreter Internal)
+│   ├── Built-in C Extension Modules
+│   └── Standard Library (Python / Mixed)
+│
+└── External (Third-Party) Modules
+    └── Installed via pip
+
+
+1. Core Built-in Modules (Interpreter Internal)
+These modules are:
+	- Compiled directly into the Python executable
+	- Always available
+	- Loaded instantly
+	- Implemented entirely in C
+	
+	✔ Part of interpreter binary
+	✔ Cannot be removed
+	✔ Extremely fast
+	✔ No .py file exists
+
+| Module   | Why it belongs here                                |
+| -------- | -------------------------------------------------- |
+| builtins | Defines all built-in names (int, list, print, len) |
+| sys      | Holds interpreter state (argv, path, modules)      |
+| gc       | Direct access to garbage collector                 |
+| _imp     | Core import machinery                              |
+| __main__ | Entry module for execution                         |
+
+Python executable
+└── Core interpreter state
+    ├── builtins
+    ├── sys
+    ├── gc
+    └── _imp
+
+	
+2. Built-in C Extension Modules (MOST IMPORTANT CATEGORY)
+These modules:
+	- Are written in C
+	- Compiled as shared libraries (.so / .pyd)
+	- Exposed to Python via CPython API
+	
+	✔ Written in C
+	✔ Very fast
+	✔ Loaded dynamically
+	✔ No Python source code
+| Module       | Reason                          |
+| ------------ | ------------------------------- |
+| time         | OS-level clock access           |
+| math         | Hardware-accelerated math       |
+| array        | Compact typed memory            |
+| marshal      | Internal bytecode serialization |
+| _thread      | Low-level threads               |
+| _io          | Core I/O engine                 |
+| _signal      | OS signal handling              |
+| _weakref     | Weak reference support          |
+| _collections | C backend for collections       |
+| _functools   | C backend (lru_cache, reduce)   |
+| _operator    | Operator functions              |
+| _heapq       | Heap implementation             |
+| _bisect      | Binary search                   |
+| _json        | JSON C parser                   |
+| _pickle      | Pickle C serializer             |
+
+Leading underscore (_) → usually internal C backend
+
+Why they exist?
+	- Performance
+	- Low-level system access
+	- Memory efficiency
+math.sqrt → C function → CPU instruction
+
+
+3. Standard Library Modules (Pure Python)
+These modules:
+	- Written in Python (.py files)
+	- Shipped with Python
+	- Can import other modules
+
+Characteristics
+	✔ Human-readable Python code
+	✔ Slightly slower than C modules
+	✔ Easy to extend and debug
+
+| Module      | Reason                      |
+| ----------- | --------------------------- |
+| pathlib     | High-level path abstraction |
+| argparse    | CLI parsing                 |
+| logging     | Logging framework           |
+| inspect     | Runtime introspection       |
+| traceback   | Stack trace formatting      |
+| contextlib  | Context manager utilities   |
+| dataclasses | Class decorators            |
+| typing      | Type hint system            |
+| unittest    | Testing framework           |
+| doctest     | Documentation testing       |
+| glob        | File pattern matching       |
+| tempfile    | Temp file utilities         |
+| shutil      | High-level file ops         |
+| csv         | CSV handling                |
+
+Lib/
+├── argparse.py
+├── logging/__init__.py
+├── typing.py
+└── dataclasses.py
+
+	
+4. Mixed Modules (Python + C)
+Some modules use:
+	- Python code for logic
+	- C extensions for performance-critical parts
+
+Why mixed?
+	Python for readability
+	C for speed
+	
+| Module          | Python Layer   | C Backend             |
+| --------------- | -------------- | --------------------- |
+| os              | os.py          | posix / nt            |
+| collections     | collections.py | _collections          |
+| functools       | functools.py   | _functools            |
+| itertools       | Python API     | C core                |
+| json            | json.py        | _json                 |
+| pickle          | pickle.py      | _pickle               |
+| re              | re.py          | _sre                  |
+| datetime        | Python API     | C datetime            |
+| random          | random.py      | C helpers             |
+| subprocess      | subprocess.py  | OS syscalls           |
+| threading       | threading.py   | _thread               |
+| multiprocessing | Python logic   | OS + C                |
+| asyncio         | Python logic   | event loop primitives |
+| sqlite3         | Python API     | SQLite C              |
+| hashlib         | Python API     | OpenSSL C             |
+
+	
+=========Internals of Python Import System==========
+modules, sys.modules, loaders, PyCodeObject, PyCFunctionObject, and caching.
+
+I’ll walk through this exactly in the order CPython does it, first for import math, 
+then for re-import, then what is cached and why, and finally some important corner cases
+
+
+Step 0: What import math really means
+	it is not a simple file read.
+	It triggers the import machinery implemented mainly in:
+
+	importlib/_bootstrap.py
+	importlib/_bootstrap_external.py
+	
+	At C-level, it starts from:
+	PyImport_ImportModuleLevelObject()
+
+
+High-level picture of Python import system
+	import statement
+	   ↓
+	import machinery (importlib)
+	   ↓
+	sys.modules  (CACHE)
+	   ↓
+	finder → loader
+	   ↓
+	module object
+	
+import X
+│
+├── BuiltinImporter?
+│      └── yes → load
+│
+├── FrozenImporter?
+│      └── yes → load
+│
+├── PathFinder?
+│      └── yes → search sys.path
+│
+└── ImportError
+
+Importer          | Loads What                     | Example Modules
+-------------------------------------------------------------------
+BuiltinImporter   | Interpreter built-ins           | sys, builtins
+FrozenImporter    | Embedded frozen bytecode        | importlib._bootstrap
+PathFinder        | Files on sys.path               | os, json, user modules
+
+BuiltinImporter → No file
+FrozenImporter  → No file
+PathFinder      → Needs filesystem
+
+🔹 Built-in Mental model
+python.exe
+└── Built-in symbol table
+    ├── sys
+    ├── builtins
+    └── gc
+🔹 Importer used
+BuiltinImporter
+
+2️. FrozenImporter
+🔹 What it loads
+	Frozen modules (Python code embedded into the interpreter binary)
+	python.exe
+	└── Embedded bytecode
+		├── importlib._bootstrap
+		└── importlib._bootstrap_external
+
+3️. PathFinder
+🔹 What it loads
+	All file-based modules found via sys.path
+	
+Characteristics
+	Searches directories listed in sys.path
+	Delegates loading to loaders:
+		SourceFileLoader
+		ExtensionFileLoader
+		SourcelessFileLoader
+sys.path
+├── stdlib/
+│   ├── os.py
+│   ├── json/
+│   └── collections/
+├── site-packages/
+└── project/
+
+
+
+
+=========================================
+SCRIPT: import json
+|
+v
+1) sys.modules?  --> not found
+|
+v
+2) Locate module (search path)
+   - .py file (standard library)
+|
+v
+3) Compile to PyCodeObject
+|
+v
+4) Create PyModuleObject
+   - md_dict initialized
+|
+v
+5) Execute PyCodeObject in md_dict
+   - functions: PyFunctionObject
+   - classes: PyTypeObject
+|
+v
+6) Store module object in sys.modules
+|
+v
+7) Bind name in local/global namespace
+   script_globals['json'] = PyModuleObject
+   
+SCRIPT: import json (again)
+|
+v
+1) sys.modules? --> Found!
+|
+v
+2) Bind name in local/global namespace
+   No re-execution, no new compilation
+
+Key Notes / Corner Cases
+	Built-in / frozen → never compiled, already in interpreter memory.
+	C extensions → module namespace holds PyCFunctionObjects.
+	Python module → executed PyCodeObject → md_dict stores PyFunctionObjects, classes, variables.
+	sys.modules is the central cache for all module types.
+	Circular imports → partially initialized PyModuleObjects in sys.modules.
+
+
+
+=======Step By Step Import Process=====
+
+Suppose your code:
+	import sys        # built-in
+	import math       # C extension
+	import json       # standard library
+
+Step 1: Check sys.modules (module cache)
+	Python keeps a dictionary of loaded modules:
+		sys.modules
+		# key: module name
+		# value: module object (PyModuleObject)
+	If module exists → reuse
+	Otherwise → continue loading.
+

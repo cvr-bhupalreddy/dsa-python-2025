@@ -1,0 +1,99 @@
+=============Python CI/CD Pipeline =============
+makefile 
+
+ CI Process [ we can use Jenkin 
+Python build tools 
+
+Python Unit testing / How to implement Functional testing in Python 
+
+Creating jar/war kind in python , What is python artifactory 
+
+Code Scan tools / like Sonar /S3 Fortify 
+
+Image Building 
+
+CD tools 
+Python continuous deployment Tools 
+
+
+
+=========================Python Fast API ==========================
+Python :
+
+
+python --version 
+
+
+IDE : Pycharm / VSCode 
+
+
+
+---
+Variables 
+
+Functions -- Function Parameters 
+Scope , Closure and Decorators 
+
+Tuples 
+
+Modules , Packages and Namespaces 
+
+
+Sequence Types  [Lists ] 
+
+Iterables and Iterators 
+
+Generators 
+
+Iteration Tools 
+
+Context Managers 
+
+
+Dictionaries 
+
+Sets 
+
+Serialization and Deserialization 
+
+Specialized Dictionaries 
+
+
+
+
+Classes 
+Polymorphism and Special Methods 
+
+Single Inheritance 
+
+Descriptors 
+
+Enumerations 
+
+Exception Handling 
+
+Meta Programming 
+
+
+==============================
+
+
+venv --- Virtual environment 
+
+
+python -m venv fastapienv  [ Creating Virtual Environment ] 
+
+Activating Virtual Environment [ .\fastapienv\Scripts\activate.bat ] 
+
+
+pip install fastapi 
+
+pip install "uvicorn[standard]"
+
+
+Swagger API : /docs 
+
+
+uvicorn ---- [ like a tomcat server ] 
+
+uvicorn <pythonfile>:app --reload 

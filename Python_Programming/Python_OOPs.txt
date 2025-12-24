@@ -1,0 +1,928 @@
+============Python Dynamic Type==========
+• Python variables are references, not typed containers
+• Objects carry type information at runtime
+• Every object stores metadata (type, refcount, value)
+• This enables dynamic typing and runtime behavior
+• Python objects consume more memory than C
+• This is a conscious design trade-off
+
+
+Python is dynamically typed because type information is stored in objects, 
+not variables, which increases memory usage compared to statically typed languages like C.
+
+
+Why does Python need this metadata?
+
+Because Python supports:
+	Dynamic typing
+	Runtime polymorphism
+	Operator overloading
+	Garbage collection
+	Reflection (type(), dir(), isinstance())
+
++------------------+
+| Reference count  |
+| Pointer to type  | ---> int, str, list, etc.
+| Actual value     |
++------------------+
+
+
+x ---> PyObject
+        ├─ refcount
+        ├─ type pointer → int
+        └─ value (10)
+
+typedef struct {
+    Py_ssize_t refcnt;   // reference count
+    PyTypeObject *type;  // pointer to type object
+} PyObject;
+
+
+===========Mutability and Immutability===============
+Immutable
+	• Numbers (int, float, Booleans, etc)
+	• Strings
+	• Tuples
+	• Frozen Sets
+
+Mutable 
+	List
+	Set 
+	Dict 
+
+
+========Python List==========
+list object
+│
+├── type info
+├── refcount
+├── size (number of elements)
+├── capacity (allocated slots)
+└── array of pointers  ──▶  obj1, obj2, obj3, ...
+
+PyListObject
+│
+├── ob_type
+├── ob_refcnt
+├── ob_size        # number of elements (len(list))
+├── allocated      # capacity (number of slots)
+└── ob_item[PyObject*]      # C array of PyObject* pointers
+
+typedef struct _object {
+    Py_ssize_t ob_refcnt;
+    struct _typeobject *ob_type;
+} PyObject;
+
+
+PyObject is the base C structure for all Python objects:
+
+• int
+• float
+• list
+• dict
+• function
+• class
+• module
+
+Everything starts from PyObject.
+
+OLD: ob_item ──▶ [p1, p2, p3, ..., p8]
+NEW: ob_item ──▶ [p1, p2, p3, ..., p8, ?, ?, ?, ...]
+
+
+Internally:
+	Allocate a NEW array of pointers
+	Copy existing pointers to new array
+	Free old pointer array
+	Update ob_item pointer
+	Update allocated
+
+What does NOT change during resize?
+✔ Actual PyObject memory
+✔ Object identities (id())
+✔ Reference counts
+
+=======Dict==============
+• Python dict and set are hash tables
+• Store object references, not values
+• Lookup requires hash + probing
+• Memory is over-allocated for speed
+• Average O(1), worst O(n)
+• Much more memory than C equivalents
+
+
+
+-----Dict Resizing Process----
+• dict object identity never changes during resize
+• Only internal hash table buffer is replaced
+• map1 always points to same PyDictObject
+• Keys/values are never copied, only pointers
+• id(dict) remains constant
+
+
+
+
+========Set=============
+
+
+
+
+
+
+
+
+
+
+
+
+
+===========================
+PYTHON SCOPE HIERARCHY (LEGB RULE)
+In Python, variable lookup follows the LEGB rule:
+
+L → Local
+E → Enclosing
+G → Global (module-level)
+B → Built-in
+
+1. LOCAL SCOPE (L)
+	• Variables defined inside a function
+	• Accessible only inside that function
+	• Destroyed when function ends
+
+2. ENCLOSING / NESTED FUNCTION SCOPE (E)
+	• Variables in outer functions
+	• Accessible to inner (nested) functions
+	• Use `nonlocal x` to modify enclosing variable
+
+3. GLOBAL / MODULE SCOPE (G)
+	• Variables defined at module level
+	• Accessible anywhere in that module
+	• Use `global` to modify inside functions
+
+4. BUILT-IN SCOPE (B)
+	• Names predefined by Python
+	• Examples: len, int, print, range
+	• Always accessible
+
+
+• Functions can be nested multiple levels
+• Inner function can access variables from all outer scopes
+• Variable lookup order: L → E → G → B
+
+
+        BUILT-IN (B)
+            ↑
+        GLOBAL / MODULE (G)
+            ↑
+    ENCLOSING / NESTED (E)
+            ↑
+        LOCAL (L)
+
+Variable Modification Rules 
+| Scope     | How to Modify                          |
+| --------- | -------------------------------------- |
+| Local     | Direct assignment                      |
+| Enclosing | `nonlocal var`                         |
+| Global    | `global var`                           |
+| Built-in  | Cannot modify (should avoid shadowing) |
+
+
+
+=======Modules in Python===========
+A Python module is a file containing Python code:
+	• Functions
+	• Classes
+	• Variables
+	• Statements
+
+Modules allow you to **organize code** and **reuse it** across programs.
+
+• Module → single .py file
+• Package → folder containing __init__.py (and modules)
+
+
+| Python Concept | Java Counterpart       | Notes                                                  |
+| -------------- | ---------------------- | ------------------------------------------------------ |
+| Module (.py)   | Class / .java file     | Single file of code; contains classes, functions, etc. |
+| Package        | Java Package           | Directory of modules/classes; used for namespacing     |
+| import         | import / import static | Bring module/package into current namespace            |
+
+
+Python comes with many modules:
+• math, os, sys, random, datetime
+
+
+• Every module has __name__
+• If module is run directly → __name__ = "__main__"
+• If module is imported → __name__ = "module_name"
+
+
+
+-----Import Syntax----
+• import module → entire module
+• from module import name → specific functions/classes
+• import module as alias → shorthand
+• from module import * → not recommended
+• Relative imports use . and .. inside packages
+
+
+import module_name
+import module_name as alias
+from module_name import name1, name2
+from module_name import *
+from module_name import name as alias
+from package_name.submodule import name
+from . import sibling_module        # current package
+from .. import parent_module        # parent package
+import os, sys, math  --- multiple modules in single line 
+
+• Circular imports → ImportError
+• Shadowing built-in modules → avoid naming files like math.py
+• Importing large modules unnecessarily → use specific imports
+
+
+=============Modules [Built-in , standard Library , Thirdparty modules ]=====================
+CORRECT DEFINITIONS (IMPORTANT)
+
+BUILT-IN MODULES
+	Compiled into the Python interpreter
+	Loaded very early
+	Listed in sys.builtin_module_names
+	Very small set
+
+STANDARD LIBRARY MODULES
+	Shipped with Python installation
+	Stored in Lib/
+	Must be imported
+	Much larger set
+
+👉 All built-in modules are part of the standard library
+👉 But NOT all standard library modules are built-in
+
+Built-in Modules===
+HOW TO VERIFY
+	import sys
+	print(sys.builtin_module_names)
+| Module       | Why it exists                                          |
+| ------------ | ------------------------------------------------------ |
+| builtins     | All built-in functions & types (int, list, len, print) |
+| sys          | Python interpreter state, argv, path                   |
+| gc           | Garbage collector                                      |
+| time         | Low-level time access                                  |
+| math         | Fast math (C-level)                                    |
+| itertools    | Efficient iteration primitives                         |
+| array        | Compact typed arrays                                   |
+| marshal      | Internal serialization (used by .pyc)                  |
+| _thread      | Low-level threading                                    |
+| _imp         | Import system internals                                |
+| _io          | Core I/O backend                                       |
+| _signal      | Signal handling                                        |
+| _weakref     | Weak references                                        |
+| _collections | C backend for collections                              |
+| _functools   | C backend for functools                                |
+| _operator    | Operator functions                                     |
+| _heapq       | Heap implementation                                    |
+| _bisect      | Binary search                                          |
+| _json        | JSON C backend                                         |
+| _pickle      | Pickle C backend                                       |
+
+
+==🔹 Standard Library Modules===
+These are NOT built-in, but shipped with Python. They live in Lib/ and are imported normally.
+
+| Module          | Purpose                     |
+| --------------- | --------------------------- |
+| os              | OS interaction              |
+| pathlib         | Modern filesystem paths     |
+| collections     | deque, Counter, defaultdict |
+| functools       | lru_cache, partial          |
+| itertools       | combinations, permutations  |
+| json            | JSON parsing                |
+| re              | Regular expressions         |
+| datetime        | Date & time                 |
+| random          | Random numbers              |
+| subprocess      | Run system commands         |
+| threading       | Multithreading              |
+| multiprocessing | Parallel processing         |
+| asyncio         | Async programming           |
+| logging         | Logging framework           |
+| argparse        | CLI parsing                 |
+| pickle          | Object serialization        |
+| csv             | CSV files                   |
+| sqlite3         | Embedded database           |
+| hashlib         | Cryptographic hashes        |
+| tempfile        | Temporary files             |
+| shutil          | High-level file ops         |
+| glob            | File pattern matching       |
+| inspect         | Runtime introspection       |
+| traceback       | Stack traces                |
+| contextlib      | Context managers            |
+| dataclasses     | Data classes                |
+| typing          | Type hints                  |
+| unittest        | Unit testing                |
+| doctest         | Doc testing                 |
+
+
+3️VERY IMPORTANT CLARIFICATION (KEY INSIGHT)
+Many modules appear in both forms:
+
+| User-Facing | Built-in Backend |
+| ----------- | ---------------- |
+| collections | _collections     |
+| functools   | _functools       |
+| heapq       | _heapq           |
+| bisect      | _bisect          |
+| json        | _json            |
+| pickle      | _pickle          |
+| operator    | _operator        |
+| statistics  | _statistics      |
+
+
+====Most useful modules=====
+DSA : collections, heapq, bisect, itertools
+System & OS : sys, os, pathlib, shutil, subprocess
+Concurrency : threading, multiprocessing, asyncio
+Serialization : json, pickle, csv
+Debugging & Introspection : Debugging & Introspection
+
+===========Python Closure===========
+A closure is a function that remembers variables from its enclosing scope
+even after the outer function has finished execution.
+
+
+1. Nested function
+2. Uses variables from outer function
+3. Outer function has already returned
+
+
+def outer(x):
+    def inner():
+        return x
+    return inner
+
+
+f = outer(10)
+print(f())   # 10
+
+
+print(f.__closure__[0].cell_contents)  # 10
+
+----Why Closures Are Useful---
+✔ Data hiding (private state)
+✔ Avoid global variables
+✔ Function factories
+✔ Decorators
+
+
+
+=======Decorator=====
+A decorator is a function that takes another function
+and returns a modified function.
+
+def my_decorator(func):
+    def wrapper():
+        print("Before")
+        func()
+        print("After")
+    return wrapper
+
+def say_hi():
+    print("Hi")
+
+say_hi = my_decorator(say_hi)
+say_hi()
+
+
+
+
+@my_decorator
+def say_hi():
+    print("Hi")
+
+
+def log(func):
+    def wrapper(*args, **kwargs):
+        print("Calling:", func.__name__)
+        return func(*args, **kwargs)
+    return wrapper
+
+@log
+def add(a, b):
+    return a + b
+
+
+
+
+===============Python Functional and Object Orianted Programming==========
+def add(a, b): a,b are called formal parameters 
+    return a + b
+
+
+add(3, 4) --- Calling function with arguments or Actual Parameters  
+
+
+3. PARAMETERS vs ARGUMENTS
+	Parameters → variables in function definition
+	Arguments  → actual values passed during call
+
+
+	def greet(name):      # name → parameter
+		print(name)
+
+	greet("Alice")        # "Alice" → argument
+
+
+4. POSITIONAL ARGUMENTS [ Arguments matched by position Order matters ]
+	def subtract(a, b):
+		return a - b
+
+	subtract(5, 3)   → 2
+	subtract(3, 5)   → -2
+
+	Too many / too few positional args → TypeError
+
+5. DEFAULT ARGUMENTS
+	Provide default value if argument is not passed
+	def power(base, exp=2):
+		return base  exp
+
+	power(3)      → 9
+	power(3, 3)   → 27
+	
+	Default argument values are evaluated ONE TIME,
+	at the moment the function is defined,
+	NOT every time the function is called.
+
+	This is true for all default arguments, but it becomes dangerous with mutable objects (lists, dicts, sets).
+
+	def add_item(item, lst=[]):
+		lst.append(item)
+		return lst
+
+	What people expect Each function call gets a fresh empty list
+
+	What actually happens
+	print(add_item(1))   # [1]
+	print(add_item(2))   # [1, 2]
+	print(add_item(3))   # [1, 2, 3]
+
+	❌ Same list reused across calls
+
+	Function definition time:
+	lst = []   ← created ONCE and stored
+
+	Call 1:
+	lst.append(1)
+
+	Call 2:
+	same lst.append(2)
+
+	Call 3:
+	same lst.append(3)
+
+	2️— Proof Using id()
+	def test(lst=[]):
+		print(id(lst))
+		lst.append(1)
+
+	test()  # same id
+	test()  # same id
+	test()  # same id
+
+
+❌ Never use mutable objects as default arguments
+✔ Use None and create inside function
+
+
+One-Line Mental Model
+Default arguments belong to the FUNCTION,
+not to the FUNCTION CALL.
+
+
+
+6. KEYWORD ARGUMENTS
+	Arguments passed using parameter names
+	Order does NOT matter
+
+7. MIXING POSITIONAL & KEYWORD ARGUMENTS
+	Positional arguments MUST come before keyword arguments
+
+
+8. *args (VARIABLE POSITIONAL ARGUMENTS)
+	Allows variable number of positional arguments Collected as a tuple
+
+	def total(*args):
+		return sum(args)
+
+	total(1, 2, 3) → 6
+
+9. kwargs (VARIABLE KEYWORD ARGUMENTS)
+	Allows variable number of keyword arguments Collected as a dictionary
+	
+	def display(kwargs):
+		for k, v in kwargs.items():
+			print(k, v)
+
+	display(name="Alice", age=25)
+
+10. COMBINING ALL PARAMETERS (IMPORTANT ORDER)
+	Correct Order:
+	----------------------------------
+	1. positional
+	2. *args
+	3. keyword-only
+	4. kwargs
+
+
+11. KEYWORD-ONLY ARGUMENTS
+	Arguments after * must be passed by keyword
+
+	def func(a, *, b):
+		print(a, b)
+
+	func(10, b=20)   ✔
+	func(10, 20)     ❌
+
+12. RETURN STATEMENT
+	• Ends function execution
+	• Returns value to caller
+	• Default return value → None
+
+13. MULTIPLE RETURN VALUES
+	Python returns a tuple
+
+	def calc(a, b):
+		return a+b, a-b
+
+	x, y = calc(5, 3)
+
+14. PASS STATEMENT
+	Placeholder where syntax requires a statement
+
+15. FUNCTION ANNOTATIONS (TYPE HINTS)
+	Helps readability, not enforced
+	def add(a: int, b: int) -> int:
+		return a + b
+
+16. NESTED FUNCTIONS
+	def outer():
+		def inner():
+			print("Hello")
+    inner()
+
+
+17. NONLOCAL vs GLOBAL
+
+	nonlocal : Refers to variable in nearest enclosing function
+
+	def outer():
+		x = 10
+		def inner():
+			nonlocal x
+			x += 1
+
+	global
+		Refers to module-level variable
+
+18. LAMBDA FUNCTIONS
+	Anonymous, single-expression functions
+	square = lambda x: x * x
+
+19. FUNCTIONS AS FIRST-CLASS OBJECTS
+
+	• Can be assigned to variables
+	• Passed as arguments
+	• Returned from functions
+
+20. COMMON CORNER CASES (VERY IMPORTANT)
+	• Mutable default arguments
+	• Forgetting return → returns None
+	• Shadowing variable names
+	• Using global unnecessarily
+	• Wrong argument order
+	• *args and kwargs misuse
+
+
+
+
+
+===================Python Classes===============
+Instance Variables:
+--------------------------------------------------
+	• Belong to individual objects
+	• Defined using self
+	• Each object has its own copy
+
+Class Variables:
+--------------------------------------------------
+	• Shared among all instances
+	• Defined inside class, outside methods
+
+class Employee:
+    company = "ABC"
+
+e1 = Employee()
+e2 = Employee()
+
+e1.company = "XYZ"
+→ creates instance variable, does NOT modify class variable
+
+INSTANCE vs CLASS VARIABLES (IMPORTANT)
+Access Order:
+--------------------------------------------------
+	1. Instance namespace
+	2. Class namespace
+	3. Parent classes
+
+
+Global Variables:
+--------------------------------------------------
+	• Defined outside any function/class
+	• Accessible inside functions (read-only)
+	
+x = 10
+
+def func():
+    print(x)
+
+
+Modifying Global Variable
+def func():
+    global x
+    x += 1
+
+
+__init__:
+--------------------------------------------------
+• Automatically called during object creation
+• Initializes instance variables
+• NOT a constructor that creates object
+
+
+self:
+--------------------------------------------------
+• Reference to current object
+• Used to access instance variables & methods
+• NOT a keyword (just a naming convention)
+
+
+__del__:
+--------------------------------------------------
+• Called when object is garbage collected
+• Not reliable for resource cleanup
+⚠️ Avoid using del.
+
+Class Methods:
+--------------------------------------------------
+• Use @classmethod decorator
+• First parameter is cls
+• Operate on class variables
+
+class Employee:
+    company = "ABC"
+
+    @classmethod
+    def change_company(cls, name):
+        cls.company = name
+
+
+Static Methods:
+--------------------------------------------------
+• Use @staticmethod
+• No self or cls
+• Utility/helper functions
+
+
+
+Inheritance:
+--------------------------------------------------
+• Child class inherits parent class
+• Reuse and extend behavior
+
+class Animal:
+    def speak(self):
+        print("Sound")
+
+class Dog(Animal):
+    pass
+
+Method Overriding:
+--------------------------------------------------
+• Child provides its own implementation
+
+super():
+--------------------------------------------------
+• Calls parent class method
+• Avoids hardcoding parent name
+
+
+MRO (Method Resolution Order):
+--------------------------------------------------
+• Order in which Python searches methods
+• Use ClassName.__mro__ to inspect
+
+Python uses C3 linearization
+
+
+Encapsulation:
+--------------------------------------------------
+• Restrict direct access to data
+• Achieved using naming conventions
+
+_public
+_protected
+__private  (name mangling)
+
+
+Abstraction:
+--------------------------------------------------
+• Hide implementation details
+• Show only essential behavior
+
+
+Polymorphism:
+--------------------------------------------------
+• Same interface, different behavior
+• Achieved via method overriding
+
+
+Closure:
+--------------------------------------------------
+• Function that remembers variables from enclosing scope
+• Even after outer function exits
+
+
+def outer(x):
+    def inner():
+        return x
+    return inner
+
+f = outer(10)
+f()  → 10
+
+
+nonlocal:
+--------------------------------------------------
+• Allows modification of enclosing scope variable
+
+
+Mutable Objects:
+--------------------------------------------------
+list, dict, set
+
+Immutable Objects:
+--------------------------------------------------
+int, float, str, tuple
+
+
+is  → identity (same object)
+==  → equality (same value)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+python Special methods 
+
+| METHOD   | PURPOSE                   | SIMPLE EXAMPLE                                      |
+| ---------| ------------------------- | --------------------------------------------------- |
+| init     | Initialize object state   | def init(self,x): self.x=x                      |
+| new      | Create object instance    | def new(cls): return super().new(cls)           |
+| str      | User-friendly string      | def str(self): return str(self.x)               |
+| repr     | Developer/debug string    | def repr(self): return f"Obj({self.x})"         |
+| len      | Length via len(obj)       | def len(self): return len(self.data)            |
+| bool     | Truth value of object     | def bool(self): return self.x>0                 |
+| eq       | Equality (==)             | def eq(self,o): return self.x==o.x              |
+| ne       | Not equal (!=)            | def ne(self,o): return self.x!=o.x              |
+| lt       | Less than (<)             | def lt(self,o): return self.x<o.x               |
+| le       | Less or equal (<=)        | def le(self,o): return self.x<=o.x              |
+| gt       | Greater than (>)          | def gt(self,o): return self.x>o.x               |
+| ge       | Greater or equal (>=)     | def ge(self,o): return self.x>=o.x              |
+| hash     | Hash value for sets/dicts | def hash(self): return hash(self.x)             |
+| call     | Make object callable      | def call(self): print("called")                 |
+| getitem  | obj[key] access           | def getitem(self,i): return self.data[i]        |
+| setitem  | obj[key]=value            | def setitem(self,i,v): self.data[i]=v           |
+| delitem  | del obj[key]              | def delitem(self,i): del self.data[i]           |
+| contains | Membership test (in)      | def contains(self,x): return x in self.data     |
+| iter     | Return iterator           | def iter(self): return iter(self.data)          |
+| next     | Next element              | def next(self): return next(self.it)            |
+| add      | Addition (+)              | def add(self,o): return self.x+o.x              |
+| sub      | Subtraction (-)           | def sub(self,o): return self.x-o.x              |
+| mul      | Multiplication (*)        | def mul(self,o): return self.x*o.x              |
+| truediv  | Division (/)              | def truediv(self,o): return self.x/o.x          |
+| floordiv | Floor division (//)       | def floordiv(self,o): return self.x//o.x        |
+| mod      | Modulus (%)               | def mod(self,o): return self.x%o.x              |
+| pow      | Power (**)                | def pow(self,o): return self.xo.x             |
+| iadd     | In-place add (+=)         | def iadd(self,o): self.x+=o.x; return self      |
+| enter    | Context manager start     | def enter(self): return self                    |
+| exit     | Context manager end       | def exit(self,a,b,c): pass                      |
+| del      | Destructor                | def del(self): print("deleted")                 |
+| sizeof   | Memory size               | def sizeof(self): return 64                     |
+| copy     | Shallow copy              | def copy(self): return type(self)(self.x)       |
+| deepcopy | Deep copy                 | def deepcopy(self,m): return type(self)(self.x) |
+
+
+| BUILT-IN FUNCTION | PURPOSE                   | SIMPLE EXAMPLE        |
+| ----------------- | ------------------------- | --------------------- |
+| id                | Memory identity of object | id(obj)               |
+| type              | Get object type           | type(obj)             |
+| isinstance        | Check object type         | isinstance(x,int)     |
+| issubclass        | Class inheritance check   | issubclass(B,A)       |
+| dir               | List attributes/methods   | dir(obj)              |
+| vars              | Object **dict**           | vars(obj)             |
+| hasattr           | Check attribute exists    | hasattr(obj,'x')      |
+| getattr           | Get attribute value       | getattr(obj,'x',None) |
+| setattr           | Set attribute value       | setattr(obj,'x',10)   |
+| delattr           | Delete attribute          | delattr(obj,'x')      |
+| callable          | Is object callable        | callable(func)        |
+| help              | Documentation helper      | help(list)            |
+| globals           | Global namespace dict     | globals()             |
+| locals            | Local namespace dict      | locals()              |
+| repr              | Official string           | repr(obj)             |
+| len               | Length of object          | len(obj)              |
+| iter              | Get iterator              | iter(lst)             |
+| next              | Next from iterator        | next(it)              |
+| object            | Base class                | object()              |
+| super             | Access parent class       | super().method()      |
+| **dict**          | Instance attributes       | obj.**dict**          |
+| **class**         | Object class              | obj.**class**         |
+| **mro**           | Method resolution order   | Class.**mro**         |
+| **slots**         | Restrict attributes       | **slots**=['x']       |
+
+
+
+
+================
+
+MODULE	FUNCTION			PURPOSE	SIMPLE EXAMPLE
+gc	gc.collect				Force garbage collection		gc.collect()
+gc	gc.get_count			GC generation counters			gc.get_count()
+gc	gc.get_stats			GC statistics					gc.get_stats()
+gc	gc.isenabled			Is GC enabled					gc.isenabled()
+gc	gc.enable				Enable GC						gc.enable()
+gc	gc.disable				Disable GC						gc.disable()
+gc	gc.get_objects			All tracked objects				gc.get_objects()
+gc	gc.get_referrers		Who refers to obj				gc.get_referrers(obj)
+gc	gc.get_referents		What obj refers to				gc.get_referents(obj)
+
+
+
+
+| FUNCTION              | PURPOSE                    | EXAMPLE                      |
+| --------------------- | -------------------------- | ---------------------------- |
+| sys.argv              | Command-line arguments     | sys.argv                     |
+| sys.exit              | Exit Python program        | sys.exit(0)                  |
+| sys.path              | Module search paths        | sys.path                     |
+| sys.version           | Python version             | sys.version                  |
+| sys.platform          | OS platform string         | sys.platform                 |
+| sys.maxsize           | Maximum integer value      | sys.maxsize                  |
+| sys.modules           | Loaded modules dictionary  | sys.modules                  |
+| sys.stdin             | Standard input stream      | sys.stdin.read()             |
+| sys.stdout            | Standard output stream     | sys.stdout.write('Hello')    |
+| sys.stderr            | Standard error stream      | sys.stderr.write('Error')    |
+| sys.getsizeof         | Memory size of object      | sys.getsizeof(obj)           |
+| sys.getrefcount       | Reference count of object  | sys.getrefcount(obj)         |
+| sys.setrecursionlimit | Set recursion depth        | sys.setrecursionlimit(10000) |
+| sys.exc_info          | Current exception info     | sys.exc_info()               |
+| sys.excepthook        | Global exception hook      | sys.excepthook               |
+| sys.byteorder         | System byte order          | sys.byteorder                |
+| sys.implementation    | Python implementation info | sys.implementation           |
+
+
+
+
+Special Methods on Functions:
+Name & Identity
+	name → Function name
+	qualname → Fully qualified name (includes nesting)
+	module → Module where function is defined
+	id(func) → Memory identity (address reference)
+
+Code & Execution
+	code → Code object (bytecode + metadata)
+	defaults → Tuple of default positional arguments
+	kwdefaults → Dict of default keyword-only arguments
+	closure → Tuple of closed-over variables (for closures)
+	globals → Global namespace visible to the function
+	annotations→ Type hints
+
+Documentation
+	doc → Docstring
+
+Call Behavior
+	call() → Invoked when function is called
