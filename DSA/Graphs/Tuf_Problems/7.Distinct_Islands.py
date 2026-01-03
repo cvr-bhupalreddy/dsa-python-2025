@@ -26,6 +26,12 @@
 # By storing relative positions, islands with same shape are recognized regardless of position in grid.
 
 
+# 1. DFS/BFS to find islands
+# 2. Record relative coordinates from island origin
+# 3. Store shapes in a set
+# 4. Answer = number of unique shapes
+
+
 def num_distinct_islands(grid):
     if not grid or not grid[0]:
         return 0

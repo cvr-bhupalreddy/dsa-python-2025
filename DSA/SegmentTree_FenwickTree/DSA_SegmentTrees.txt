@@ -1,0 +1,302 @@
+===================Fenwick Trees and Segment Trees=====================
+Core concept :
+Indexed from  1
+At each index range stored is : [ i - LSB(i) + 1 --> i ] LSB = Last Set Bit of i = i&(-i) [ (-i) means 2's complement of i ]
+
+
+# Fenwick Tree does NOT store individual values.
+# It stores partial prefix sums.
+# Update jumps upward using LSB. i += LSB(i)
+# Query jumps downward using LSB.i -= LSB(i)
+
+
+
+Fenwick Tree vs Segment Tree (Quick Comparison)
+| Feature          | Fenwick Tree | Segment Tree  |
+| ---------------- | ------------ | ------------- |
+| Range Query      | Prefix only  | Any range     |
+| Update           | Point        | Point / Range |
+| Complexity       | Simpler      | More powerful |
+| Space            | O(n)         | O(4n)         |
+| Lazy Propagation | ❌ No         | ✅ Yes         |
+
+================================================================================
+FENWICK TREE (BINARY INDEXED TREE) — POPULAR DSA PATTERNS
+================================================================================
+
+| PATTERN / USE CASE                | MOST POPULAR PROBLEMS (TOP 5)                                      | CORE IDEA                                                                 |
+|----------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Prefix Sum Queries               | 1. Range Sum Query (Mutable)                                       | Store partial prefix sums; update and query in log(n)                     |
+|                                  | 2. Count of Smaller Numbers After Self                             | Convert problem to prefix frequency query                                |
+|                                  | 3. Inversion Count in Array                                        | Count how many elements smaller/larger appeared before                   |
+|                                  | 4. Number of Elements ≤ X                                          | Use BIT as frequency array                                                |
+|                                  | 5. Dynamic Prefix Sum                                               | Efficient alternative to prefix array                                    |
+|----------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Frequency / Order Statistics     | 1. K-th Smallest Element                                           | Binary search on prefix sums                                              |
+|                                  | 2. Find Rank of an Element                                         | Prefix frequency gives rank                                               |
+|                                  | 3. Online Median                                                   | Maintain counts, query cumulative freq                                   |
+|                                  | 4. Count Numbers in Range                                          | prefix(r) - prefix(l-1)                                                   |
+|                                  | 5. Count Distinct in Updates                                       | BIT over compressed values                                                |
+|----------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Point Update + Range Query       | 1. Range Sum Query II                                              | Single index update, prefix sum query                                     |
+|                                  | 2. Stock Price Fluctuation                                         | Update prices, query prefix stats                                         |
+|                                  | 3. Array Update & Queries                                          | Efficient log(n) updates                                                  |
+|                                  | 4. Competitive Ranking                                             | Maintain dynamic scores                                                   |
+|                                  | 5. Event Scheduling Counts                                         | Time-indexed frequency updates                                            |
+
+-------------------------
+FENWICK TREE TEMPLATE
+-------------------------
+class FenwickTree:
+    def __init__(self, n):
+        self.n = n
+        self.bit = [0] * (n + 1)
+
+    def update(self, i, delta):
+        while i <= self.n:
+            self.bit[i] += delta
+            i += i & -i
+
+    def query(self, i):
+        s = 0
+        while i > 0:
+            s += self.bit[i]
+            i -= i & -i
+        return s
+
+    def range_query(self, l, r):
+        return self.query(r) - self.query(l - 1)
+
+
+-----------------Segment Trees------------------
+Segment Tree: Overview
+	A Segment Tree is a binary tree data structure used for efficient range queries and updates on an array.
+	Handles queries over intervals/ranges, like sum, min, max, gcd, xor, etc.
+	Supports updates efficiently.
+	Query and update time complexity: O(log n).
+	Space complexity: O(4 * n).
+
+Leaf nodes → store individual array elements.
+Internal nodes → store merged values of child nodes (sum, min, max, etc.).
+
+
+=====upsert [ Insertion/Update]======
+How Insertion / Update Works
+
+In a segment tree, "insertion" usually means updating an element at index i.
+
+Steps:
+	Start from the root.
+	Recursively go left or right depending on index.
+	When you reach the leaf node, update its value.
+	Recompute all parent nodes on the path back to root.
+	
+def update(node, l, r, idx, val):
+    if l == r:  # leaf node
+        tree[node] = val
+        return
+    mid = (l + r) // 2
+    if idx <= mid:
+        update(2*node+1, l, mid, idx, val)
+    else:
+        update(2*node+2, mid+1, r, idx, val)
+    tree[node] = tree[2*node+1] + tree[2*node+2]  # merge function[ sum , min , max , gcd ] 
+
+node → current node index in tree array
+[l, r] → range of current segment
+idx → index to update
+val → new value
+
+
+========Search=============
+How Search / Query Works
+
+"Search" usually means querying a range [ql, qr].
+
+Steps:
+	If current segment [l,r] is completely outside [ql, qr] → return neutral value (0 for sum, ∞ for min).
+	If current segment [l,r] is completely inside [ql, qr] → return stored value.
+	Otherwise → recurse into left and right children and merge results.
+
+def query(node, l, r, ql, qr):
+    # no overlap
+    if qr < l or r < ql:
+        return 0  # sum query; change to inf for min query
+    # total overlap
+    if ql <= l and r <= qr:
+        return tree[node]
+    # partial overlap
+    mid = (l + r) // 2
+    left = query(2*node+1, l, mid, ql, qr)
+    right = query(2*node+2, mid+1, r, ql, qr)
+    return left + right  # merge function
+
+
+Key Takeaways
+	Leaf nodes → store single elements.
+	Internal nodes → store aggregate of children (sum, min, max, etc.).
+	Update → change leaf → update parents.
+	Query → recursively check total, partial, or no overlap.
+	Lazy propagation → efficient range updates.
+
+Applications:
+	Competitive programming
+	Range queries / interval problems
+	Online statistics
+	Games and score tracking
+	Scheduling, booking systems
+	Stock market problems
+================================================================================
+SEGMENT TREE — POPULAR DSA PATTERNS
+================================================================================
+
+| PATTERN / USE CASE                | MOST POPULAR PROBLEMS (TOP 5)                                      | CORE IDEA                                                                 |
+|----------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Range Query (Static)             | 1. Range Minimum Query                                            | Divide array into segments                                                |
+|                                  | 2. Range Maximum Query                                            | Each node stores range result                                             |
+|                                  | 3. Range Sum Query                                                 | Merge left + right child                                                   |
+|                                  | 4. GCD on Range                                                    | Store GCD per segment                                                     |
+|                                  | 5. XOR Queries                                                     | Segment-wise XOR                                                          |
+|----------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Point Update + Range Query       | 1. Range Sum Query (Mutable)                                       | Update leaf and propagate up                                              |
+|                                  | 2. Dynamic RMQ                                                     | Recompute affected segments                                               |
+|                                  | 3. Game Score Tracking                                             | Maintain real-time aggregates                                             |
+|                                  | 4. Online Query Systems                                            | Queries + updates together                                                |
+|                                  | 5. Stock Market Range Stats                                        | Log(n) updates & queries                                                  |
+|----------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Lazy Propagation                 | 1. Range Update Range Query                                       | Delay updates to children                                                 |
+|                                  | 2. Add Value to Range                                              | Store pending lazy values                                                 |
+|                                  | 3. Flip Binary Range                                               | Lazy toggle propagation                                                   |
+|                                  | 4. Interval Increment Queries                                      | Batch updates                                                             |
+|                                  | 5. Hotel / Booking Systems                                         | Efficient bulk updates                                                    |
+|----------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------|
+| Advanced Segment Trees           | 1. Maximum Subarray Sum                                            | Store sum, prefix, suffix, max                                            |
+|                                  | 2. Merge Intervals                                                 | Combine node metadata                                                     |
+|                                  | 3. Query on Intervals                                              | Node stores custom object                                                 |
+|                                  | 4. K-th Order Statistic                                            | Tree over frequencies                                                     |
+|                                  | 5. Persistent Segment Tree                                         | Versioned trees                                                          |
+
+-------------------------
+SEGMENT TREE TEMPLATE
+-------------------------
+class SegmentTree:
+    def __init__(self, arr):
+        self.n = len(arr)
+        self.tree = [0] * (4 * self.n)
+        self.build(0, 0, self.n - 1, arr)
+
+    def build(self, node, l, r, arr):
+        if l == r:
+            self.tree[node] = arr[l]
+            return
+        mid = (l + r) // 2
+        self.build(2 * node + 1, l, mid, arr)
+        self.build(2 * node + 2, mid + 1, r, arr)
+        self.tree[node] = self.tree[2 * node + 1] + self.tree[2 * node + 2]
+
+    def query(self, node, l, r, ql, qr):
+        if qr < l or r < ql:
+            return 0
+        if ql <= l and r <= qr:
+            return self.tree[node]
+        mid = (l + r) // 2
+        return self.query(2 * node + 1, l, mid, ql, qr) + \
+               self.query(2 * node + 2, mid + 1, r, ql, qr)
+
+    def update(self, node, l, r, idx, val):
+        if l == r:
+            self.tree[node] = val
+            return
+        mid = (l + r) // 2
+        if idx <= mid:
+            self.update(2 * node + 1, l, mid, idx, val)
+        else:
+            self.update(2 * node + 2, mid + 1, r, idx, val)
+        self.tree[node] = self.tree[2 * node + 1] + self.tree[2 * node + 2]
+
+======Iterative Segment Tree=====
+🌳 Iterative Segment Tree (Bottom-Up)
+🔹 Core Idea (Very Important)
+	Store the segment tree in a single array [with size 2n , 0th index is not used]
+	Leaves represent original array elements
+	Internal nodes store merged results of children
+	Indexing:
+		Leaves start at index n
+		Parent of node i is i // 2
+		Left child = 2*i, Right child = 2*i + 1
+	All operations are done using index movement, not recursion
+
+build(arr):
+    n = len(arr)
+    tree = array of size 2*n
+
+    # Step 1: Fill leaves
+    for i from 0 to n-1:
+        tree[n + i] = arr[i]
+
+    # Step 2: Build parents
+    for i from n-1 down to 1:
+        tree[i] = merge(tree[2*i], tree[2*i + 1])
+
+=====Iterative Query======
+query(l, r):
+    l = l + n
+    r = r + n
+    result = identity_value
+
+    while l <= r:
+        if l is right child (l % 2 == 1):
+            result = merge(result, tree[l])
+            l = l + 1
+
+        if r is left child (r % 2 == 0):
+            result = merge(result, tree[r])
+            r = r - 1
+
+        l = l // 2
+        r = r // 2
+
+    return result
+
+Why This Works
+	Odd l → right child → fully inside range
+	Even r → left child → fully inside range
+	Parent covers extra range → skip it
+	Each step shrinks range geometrically
+======Iterative Point Update=====
+🧠 Core Idea
+	Update the leaf node
+	Move upward updating parents
+	Only log n nodes affected
+
+update(i, value):
+    i = i + n
+    tree[i] = value
+
+    while i > 1:
+        i = i // 2
+        tree[i] = merge(tree[2*i], tree[2*i + 1])
+
+
+=============Lazy Propagation=================
+How Lazy Propagation Works (Step by Step)
+
+Maintain two arrays:
+	tree[] → segment tree
+	lazy[] → stores pending updates
+
+Range Update [l, r] += x:
+	If the current node [node_l, node_r] is completely inside [l, r]:
+		Update tree[node] using the operation
+		Store x in lazy children (mark children as “pending update”)
+
+	If partially overlapping:
+		Propagate pending updates (if any) from lazy[node]
+		Recurse into left and right children
+
+	If no overlap:
+		Do nothing
+
+Range Query [l, r]:
+	Before using a node, apply any pending lazy updates.
+	Then recurse as normal.

@@ -1,0 +1,338 @@
+======================Trie Datastructure===============
+PATTERN | NAME                         | CORE IDEA                               | MOST POPULAR INTERVIEW PROBLEMS
+----------------------------------------------------------------------------------------------------
+1       | Basic Trie                   | Prefix tree insert/search               | LC 208 Implement Trie
+        |                              |                                         | Prefix Search
+        |                              |                                         | Dictionary Trie
+----------------------------------------------------------------------------------------------------
+2       | Prefix Count Trie            | Count words passing through nodes       | LC 2416 Prefix Scores
+        |                              |                                         | Count Words With Prefix
+----------------------------------------------------------------------------------------------------
+3       | Longest Prefix Matching      | Traverse until mismatch/end             | LC 648 Replace Words
+        |                              |                                         | Longest Common Prefix
+----------------------------------------------------------------------------------------------------
+4       | Trie + DFS (Grid Search)     | Trie pruning + DFS                      | LC 212 Word Search II
+        |                              |                                         | Boggle
+----------------------------------------------------------------------------------------------------
+5       | XOR / Bitwise Trie           | Binary trie for XOR optimization        | LC 421 Maximum XOR
+        |                              |                                         | Max XOR With Queries
+----------------------------------------------------------------------------------------------------
+6       | Trie Delete                  | Backtracking node cleanup               | Delete Word From Trie
+----------------------------------------------------------------------------------------------------
+7       | Wildcard Trie Search         | DFS on '.' characters                  | LC 211 Add & Search Word
+----------------------------------------------------------------------------------------------------
+8       | Auto Suggest / Top-K         | DFS from prefix node                   | LC 1268 Search Suggestions
+----------------------------------------------------------------------------------------------------
+
+
+==================== TRIE (PREFIX TREE) ====================
+
+WHAT IS A TRIE?
+A Trie is a tree-like data structure used to store strings (usually lowercase words)
+where each node represents a character.
+
+• Each path from root to a node represents a prefix
+• Common prefixes are shared
+• Very efficient for prefix-based problems
+
+Used in:
+- Autocomplete
+- Dictionary search
+- Prefix queries
+- Spell check
+- Word search problems
+
+===========================
+TRIE DATA STRUCTURE – CORE IDEA
+===========================
+
+Trie (Prefix Tree) is a tree-based data structure used to store strings efficiently.
+Each node represents a character.
+Paths from root to node represent prefixes.
+A complete word ends at a node marked as end-of-word.
+
+Key advantages:
+- Fast prefix search
+- Time complexity depends on word length, not number of words
+- Used heavily in dictionary, autocomplete, spell-check
+
+Node structure:
+- children: map (char -> node)
+- is_end: boolean
+
+Root node:
+- Empty character
+- Does not represent any letter
+
+===========================
+TRIE INSERT – CORE IDEA
+===========================
+
+Goal:
+Insert a word into the trie character by character.
+
+Algorithm:
+1. Start from root
+2. For each character in the word:
+   - If character not present in children:
+       create new node
+   - Move to that child
+3. After last character:
+   - Mark node as end-of-word
+
+Time Complexity:
+O(length of word)
+
+===========================
+TRIE INSERT – PYTHON CODE
+===========================
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+
+===========================
+TRIE SEARCH – CORE IDEA
+===========================
+
+Goal:
+Check if a full word exists in the trie.
+
+Algorithm:
+1. Start from root
+2. For each character:
+   - If character not in children:
+       return False
+   - Move to that child
+3. After last character:
+   - Return node.is_end
+
+===========================
+TRIE SEARCH – PYTHON CODE
+===========================
+
+    def search(self, word):
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return node.is_end
+
+===========================
+TRIE PREFIX SEARCH (STARTS WITH)
+===========================
+
+Goal:
+Check if any word starts with given prefix.
+
+Algorithm:
+1. Traverse prefix characters
+2. If traversal completes:
+   return True
+
+===========================
+PREFIX SEARCH – PYTHON CODE
+===========================
+
+    def startsWith(self, prefix):
+        node = self.root
+        for ch in prefix:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return True
+
+====================================================
+MOST IMPORTANT TRIE PATTERNS – CORE IDEAS
+====================================================
+
+===========================
+1. PREFIX MATCHING
+===========================
+
+Problem:
+Check if a prefix exists.
+
+Idea:
+Traverse trie until prefix ends.
+
+Used in:
+- Autocomplete
+- Dictionary search
+
+===========================
+2. LONGEST COMMON PREFIX
+===========================
+
+Problem:
+Find longest prefix common to all words.
+
+Idea:
+Traverse trie while:
+- Node has only one child
+- Node is not end-of-word
+
+Stop when condition fails.
+
+===========================
+3. AUTOCOMPLETE / SUGGESTIONS
+===========================
+
+Problem:
+Return all words with a given prefix.
+
+Idea:
+1. Traverse prefix
+2. DFS from that node
+3. Collect all words ending at is_end nodes
+
+===========================
+4. WORD SEARCH (BOARD + TRIE)
+===========================
+
+Problem:
+Find dictionary words in grid.
+
+Idea:
+- Build trie from dictionary
+- DFS grid
+- Prune paths not in trie
+
+Used in:
+- LeetCode Word Search II
+
+===========================
+5. COUNT DISTINCT WORDS
+===========================
+
+Problem:
+Count unique words inserted.
+
+Idea:
+Increment count whenever is_end changes from False to True.
+
+===========================
+6. DELETE WORD FROM TRIE
+===========================
+
+Problem:
+Remove a word safely.
+
+Idea:
+- Use recursion
+- Remove nodes bottom-up if:
+  - No children
+  - Not end-of-word
+
+===========================
+7. MAXIMUM XOR (BINARY TRIE)
+===========================
+
+Problem:
+Find pair with maximum XOR.
+
+Idea:
+- Store bits (0/1) in trie
+- For each bit:
+  try opposite bit to maximize XOR
+
+Used in:
+- Bit manipulation problems
+
+====================================================
+SUFFIX TRIE – CORE IDEA
+====================================================
+
+Suffix Trie stores all suffixes of a string.
+
+Example:
+Word = "banana"
+
+Suffixes:
+banana
+anana
+nana
+ana
+na
+a
+
+All suffixes are inserted into trie.
+
+===========================
+SUFFIX TRIE USE CASES
+===========================
+
+- Substring search
+- Pattern matching
+- Longest repeated substring
+- DNA sequence matching
+
+===========================
+SUFFIX TRIE INSERT – IDEA
+===========================
+
+For string s:
+for i from 0 to len(s)-1:
+    insert s[i:]
+
+Time Complexity:
+O(n^2) insertion
+Space heavy
+
+===========================
+SUFFIX TRIE – PYTHON CODE
+===========================
+
+class SuffixTrie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert_suffixes(self, s):
+        for i in range(len(s)):
+            node = self.root
+            for ch in s[i:]:
+                if ch not in node.children:
+                    node.children[ch] = TrieNode()
+                node = node.children[ch]
+            node.is_end = True
+
+===========================
+TRIE vs SUFFIX TRIE
+===========================
+
+Trie:
+- Stores words
+- Prefix-based
+- Less memory
+
+Suffix Trie:
+- Stores all suffixes
+- Substring-based
+- Very high memory
+
+====================================================
+WHEN TO USE TRIE
+====================================================
+
+- Prefix queries
+- Fast word search
+- Dictionary problems
+- Autocomplete
+- Word games
+- XOR / bit problems
+
+====================================================

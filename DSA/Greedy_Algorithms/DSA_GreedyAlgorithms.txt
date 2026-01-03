@@ -1,0 +1,125 @@
+=================Greedy Patterns================
+
+✅ Most Popular Greedy Strategy Patterns
+
+| Greedy Pattern                           | Popular Problems                                                                                     |
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| Activity Selection / Interval Scheduling  | Activity Selection, Non-overlapping Intervals, Min Arrows, Meeting Rooms, Course Schedule III        |
+| Scheduling by Sorting                     | Job Sequencing, CPU Scheduling, Assign Cookies, Minimum Platforms                                     |
+| Max/Min Element Greedy                    | Candy Distribution, Gas Station, Jump Game, Rope Merging, K Negations                                 |
+| Greedy + Priority Queue (Heap)            | Merge K Lists, Task Scheduler, Reorganize String, Median Stream, Course Schedule III                  |
+| Greedy String Construction                | Remove K Digits, Reorganize String, Partition Labels, Longest Happy String                            |
+| Sweep Line Greedy                         | Car Pooling, Meeting Rooms II, Employee Free Time, Skyline Problem                                    |
+| Coin Change Greedy                        | Minimum Coins, Lemonade Change, Refueling Stops                                                       |
+| Local Array Greedy                        | Max Subsequence Score, K Negations, Increasing Triplet                                                |
+| Graph Greedy                              | Prim’s MST, Kruskal’s MST, Dijkstra’s Algorithm                                                       |
+| Greedy Compression / Reconstruction       | Merge Intervals, Remove Duplicate Letters, Smallest Subsequence                                       |
+
+
+
+
+1. Activity Selection / Interval Scheduling
+Greedy Idea: Always pick the interval with the earliest finishing time
+
+Popular Problems
+
+	Activity Selection Problem
+	Non-overlapping Intervals
+	Minimum Number of Arrows to Burst Balloons
+	Interval Scheduling Maximum Meetings
+	Meeting Rooms I / II
+	Course Schedule III (greedy + heap)
+	
+
+2. Scheduling by Sorting
+
+Greedy Idea: Sort jobs based on a key (start time, deadline, duration) and make the locally optimal choice.
+
+Popular Problems
+	Job Sequencing with Deadlines
+	CPU Task Scheduling
+	Shortest Job First / Minimum Waiting Time
+	Last Moment Before All Ants Fall
+	Assign Cookies
+	Minimum Platforms (train scheduling)
+
+3. Greedy on Absolute Maximum / Minimum
+Greedy Idea: Pick the max or min element each step.
+
+Popular Problems
+
+	Candy Distribution
+	Gas Station (circular tour)
+	Jump Game I
+	Reduce Array Size to Half
+	Largest Sum After K Negations
+	Rope Joining (min-cost rope merging)
+	
+4. Greedy with Priority Queue (Heap)
+Greedy Idea: Maintain a heap to always pick the best candidate available.
+
+Popular Problems
+	Merge K Sorted Lists
+	Reorganize String
+	Tasks Scheduler
+	Find Median from Data Stream
+	Course Schedule III
+	K Pairs with Smallest Sums
+	
+5. Greedy for String Construction
+Greedy Idea: Pick lexicographically best or most frequent character.
+
+Popular Problems
+
+	Remove K Digits
+	Build the Smallest Number
+	Reorganize String
+	Longest Happy String
+	Partition Labels
+	Valid Parentheses with Minimum Removals
+	
+6. Greedy with Sorting + Sweeping (Sweep Line)
+ Greedy Idea: Convert events into +1 / –1 timeline and sweep
+ 
+Popular Problems
+	Meeting Rooms II
+	Car Pooling
+	Employee Free Time
+	Skyline Problem (variant)
+	Max Concurrent Events
+	
+7. Coin Change (Classic Greedy)
+
+Greedy Idea: Pick the largest possible coin first (only works for canonical coin systems).
+
+Popular Problems
+	Minimum Coins to Make Amount (works for INR/USD denominations)
+	Lemonade Change
+	Minimum Number of Refueling Stops (greedy + heap)
+	
+8. Greedy for Arrays (Local Optimization)
+Greedy Idea: At each step pick local best to reach global best.
+
+Popular Problems
+	Maximum Subsequence Score
+	Maximize Array Sum After K Negations
+	Distribute Candies
+	Increasing Triplet Subsequence (partially greedy)
+	
+9. Greedy in Graphs
+Greedy Idea: Always take the smallest/cheapest edge or node first.
+
+Popular Problems
+	Prim’s Algorithm (MST)
+	Kruskal’s Algorithm (MST)
+	Dijkstra’s Algorithm (Shortest Path)
+
+
+10. Greedy Compression & Reconstruction
+Greedy Idea: Reduce the problem by merging or simplifying.
+
+Popular Problems
+	Merge Intervals
+	Non-overlapping Intervals
+	Smallest Subsequence of Distinct Characters
+	Remove Duplicate Letters
