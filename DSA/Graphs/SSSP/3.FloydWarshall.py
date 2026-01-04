@@ -34,3 +34,29 @@ def floyd_warshall(n, edges):
             return None  # Negative cycle exists
 
     return dist
+
+
+
+def max_min_path(n, edges):
+    """
+    Compute max-min (bottleneck) path between all pairs using Floyd-Warshall.
+    """
+    INF = 0  # For bottleneck, no edge = 0 (assuming positive weights)
+    # Step 1: Initialize matrix
+    bottleneck = [[INF]*n for _ in range(n)]
+    for i in range(n):
+        bottleneck[i][i] = float('inf')  # Self-loop: infinite capacity
+
+    for u, v, w in edges:
+        bottleneck[u][v] = w
+        bottleneck[v][u] = w  # undirected
+
+    # Step 2: Floyd-Warshall variant
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                # Update path i->j via k
+                bottleneck[i][j] = max(bottleneck[i][j],
+                                       min(bottleneck[i][k], bottleneck[k][j]))
+
+    return bottleneck

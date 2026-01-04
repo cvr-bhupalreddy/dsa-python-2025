@@ -22,6 +22,21 @@
 # r1 = arr1[mid1]
 # r2 = arr2[mid2]
 
+# we need to have (n+m+1)//2 elements in left half
+# A,B are of length n,m
+#
+# we need to find mid1, mid2 such that
+# mid1+mid2 = (n+m+1)//2
+# mid2 = (n+m+1)//2 - mid1
+# mid1 = (low + high) // 2
+#
+# | Condition                           | Meaning                  | Action                     |
+# | ----------------------------------- | ------------------------ | -------------------------- |
+# | `left1 ≤ right2 AND left2 ≤ right1` | Valid partition          | Compute median             |
+# | `left1 > right2`                    | Too many elements from A | Move left (`high = i - 1`) |
+# | `left2 > right1`                    | Too few elements from A  | Move right (`low = i + 1`) |
+
+
 class Solution:
     # Function to find the median of two sorted arrays.
     def median(self, arr1, arr2):

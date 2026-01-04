@@ -46,3 +46,40 @@ def maxProduct(nums):
         result = max(result, max_prod)
 
     return result
+
+
+class Solution:
+    # Function to find the product of elements in maximum product subarray
+    def maxProduct_prefix_suffix(self, nums):
+        n = len(nums)
+
+        ans = float('-inf')  # to store the answer
+
+        # Indices to store the prefix and suffix multiplication
+        prefix, suffix = 1, 1
+
+        # Iterate on the elements of the given array
+        for i in range(n):
+
+            # Resetting the prefix and suffix multiplication if they turn out to be zero
+            if prefix == 0:
+                prefix = 1
+            if suffix == 0:
+                suffix = 1
+
+            # update the prefix and suffix multiplication
+            prefix *= nums[i]
+            suffix *= nums[n - i - 1]
+
+            # store the maximum as the answer
+            ans = max(ans, max(prefix, suffix))
+
+        # return the result
+        return ans
+
+
+# Example usage
+nums = [4, 5, 3, 7, 1, 2]
+sol = Solution()
+ans = sol.maxProduct(nums)
+print("The product of elements in maximum product subarray is:", ans)
